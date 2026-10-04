@@ -10,6 +10,7 @@ import dev.endlesssea.extensions.api.model.Episode
 import dev.endlesssea.extensions.api.model.ExtensionInfo
 import dev.endlesssea.extensions.api.model.ExtensionSetting
 import dev.endlesssea.extensions.api.model.FilterSet
+import dev.endlesssea.extensions.api.model.HomeCategory
 import dev.endlesssea.extensions.api.model.LinkRequest
 import dev.endlesssea.extensions.api.model.MainPageRequest
 import dev.endlesssea.extensions.api.model.MediaDetails
@@ -140,14 +141,23 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
     private fun langSetting() = ExtensionSetting(
         key = "pref_lang",
         title = "Langue préférée",
-        summary = "vf, vostfr, vo ou multi — les lecteurs de cette langue passent " +
-            "en premier. Laissez vide pour garder l'ordre de la source.",
-        type = ExtensionSetting.Type.TEXT,
-        defaultValue = "",
-    )
+        summary = "Les lecteurs de cette langue passent en premier. " +
+            "« auto » suit le réglage global du lecteur.",
+        type = ExtensionSetting.Type.LIST,
+        defaultValue = "auto",
+    ).also { it.options = listOf("auto", "vf", "vostfr", "vo", "multi") }
 
-    /** Langue demandée par l'utilisateur, ou `null` si « auto ». */
-    protected fun preferredLang(): AudioLang? = when (setting("pref_lang").lowercase()) {
+    /**
+     * Langue demandée : réglage de la source, sinon préférence globale de l'app
+     * (`app.pref_lang`, 0.7.0+), sinon `null` = ordre d'origine.
+     */
+    protected fun preferredLang(): AudioLang? {
+        val raw = setting("pref_lang").lowercase().takeIf { it.isNotBlank() && it != "auto" }
+            ?: ctx.settings["app.pref_lang"]?.trim()?.lowercase().orEmpty()
+        return parseLang(raw)
+    }
+
+    private fun parseLang(value: String): AudioLang? = when (value) {
         "vf", "french", "francais", "français" -> AudioLang.VF
         "vostfr", "vost", "sub" -> AudioLang.VOSTFR
         "vo", "original" -> AudioLang.VO
@@ -191,6 +201,9 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
         poster: String? = null,
         year: Int? = null,
         altTitles: List<String> = emptyList(),
+        rating: Double? = null,
+        audioLangs: List<AudioLang> = emptyList(),
+        genres: List<String> = emptyList(),
     ) = SearchItem(
         id = Text.idOf(providerName.lowercase().take(4), url),
         title = Text.decodeHtml(title).trim(),
@@ -199,7 +212,22 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
         posterUrl = poster?.let { Text.fixUrlNull(it, mainUrl) },
         type = type,
         year = year,
-    )
+    ).also { s ->
+        // Champs additifs de l'app 0.7.0 : badges ⭐ et VF/VOSTFR sur la vignette.
+        rating?.takeIf { it > 0.0 }?.let { s.rating = it }
+        s.genres = genres
+        s.audioLangs = audioLangs.ifEmpty { langsFromLabel(title) }
+    }
+
+    /** VF / VOSTFR devinés depuis le titre de la vignette (« … VF », « … VOSTFR »). */
+    private fun langsFromLabel(label: String): List<AudioLang> {
+        val l = label.lowercase()
+        val out = ArrayList<AudioLang>(2)
+        if (Regex("""\bvostfr?\b|\bsous[- ]titr""").containsMatchIn(l)) out += AudioLang.VOSTFR
+        if (Regex("""\bv(?:f|ff|fq|fi)\b|\btruefrench\b|\bfrench\b""").containsMatchIn(l)) out += AudioLang.VF
+        if (Regex("""\bmulti\b""").containsMatchIn(l)) out += AudioLang.MULTI
+        return out
+    }
 
     /** Fiche « film » : une saison, un épisode, la charge utile pointant les lecteurs. */
     protected fun movieDetails(
@@ -332,6 +360,14 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
     // Valeurs par défaut
     // -----------------------------------------------------------------------
 
+    /**
+     * Rangées proposées à l'app (0.7.0+) : chaque [HomeRow] devient une
+     * catégorie navigable (Accueil, Explorer, « Tout voir »). La première
+     * tient lieu de « main ».
+     */
+    override suspend fun categories(): List<HomeCategory> =
+        homeRows.map { HomeCategory(it.key, it.title) }
+
     override suspend fun getMainPage(request: MainPageRequest): PagedResult<SearchItem> {
         val row = homeRows.firstOrNull { it.key == request.category } ?: homeRows.firstOrNull()
         ?: return PagedResult(emptyList(), request.page, false)
@@ -382,8 +418,8 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
             ?: homeRows.firstOrNull { norm(it.title).contains(n) || norm(it.key).contains(n) }
     }
 
-    /** Catégories proposées par la source (rangées déclarées). */
-    fun categories(): List<String> = homeRows.map { it.title }
+    /** Libellés des rangées, pour les messages d'aide. */
+    fun categoryTitles(): List<String> = homeRows.map { it.title }
 
     protected open suspend fun searchQuery(query: String, page: Int): List<SearchItem> = emptyList()
 

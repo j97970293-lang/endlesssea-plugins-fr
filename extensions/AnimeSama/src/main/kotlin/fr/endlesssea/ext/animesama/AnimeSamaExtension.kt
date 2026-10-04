@@ -46,7 +46,7 @@ class AnimeSamaExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://anime-sama.to"
     override val providerName = "Anime-Sama"
     override val extensionId = "fr.endlesssea.ext.animesama"
-    override val versionCode = 9
+    override val versionCode = 10
     override val descriptionText =
         "Animes VF & VOSTFR : catalogue complet, saisons, films et OAV, miroirs multiples."
     override val supportedTypes = setOf(MediaType.ANIME, MediaType.MOVIE, MediaType.OVA)

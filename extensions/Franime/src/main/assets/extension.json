@@ -1,8 +1,8 @@
 {
   "id": "fr.endlesssea.ext.franime",
   "name": "FRAnime",
-  "version": 16,
-  "versionName": "1.3.0",
+  "version": 17,
+  "versionName": "1.4.0",
   "apiVersion": 1,
   "description": {
     "fr": "FRAnime — animes VF et VOSTFR (catalogue FRAnime + métadonnées Kitsu)"

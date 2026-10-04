@@ -21,6 +21,12 @@ class ExtensionContext(
      */
     var settings: Map<String, String> = emptyMap()
 
+    /**
+     * Dossier cache privé dédié à l'extension (persistant entre sessions).
+     * Champ additif hors constructeur (compatibilité binaire apiVersion 1).
+     */
+    var cacheDir: File? = null
+
     /** Raccourci : valeur d'un réglage (ou [fallback] si non défini). */
     fun setting(key: String, fallback: String = ""): String = settings[key] ?: fallback
 }

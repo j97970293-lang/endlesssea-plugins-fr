@@ -37,7 +37,16 @@ data class SearchItem(
     val posterUrl: String? = null,
     val type: MediaType,
     val year: Int? = null,
-)
+) {
+    /** Champ additif hors constructeur (apiVersion 1 compatible) : badge ⭐ sur la vignette. */
+    var rating: Double? = null
+
+    /** Champ additif : langues audio proposées (badge VF / VOSTFR sur la vignette). */
+    var audioLangs: List<AudioLang> = emptyList()
+
+    /** Champ additif : genres principaux (filtrage local des résultats). */
+    var genres: List<String> = emptyList()
+}
 
 /** Page container: `page` starts at 1 (spec §2 pagination). */
 data class PagedResult<T>(val items: List<T>, val page: Int, val hasNextPage: Boolean)
@@ -83,6 +92,10 @@ data class MediaDetails(
      */
     var characters: List<CharacterCredit> = emptyList()
     var trailerUrl: String? = null
+    /** Note sur 10 (TMDB/AniList/source) — badge ⭐ de la fiche. Champ additif hors constructeur. */
+    var rating: Double? = null
+    /** Nombre de votes associé à [rating]. */
+    var ratingCount: Int? = null
 }
 
 /** Personnage + voix du doublage (ex. AniList/fragment anime). */
@@ -124,6 +137,9 @@ data class FilterSet(
 /** A home row request: the app asks for a named row ("recently_added", "trending", …). */
 data class MainPageRequest(val category: String, val page: Int)
 
+/** Une rangée de catalogue proposée par une extension (clé renvoyée via [MainPageRequest.category]). */
+data class HomeCategory(val key: String, val title: String)
+
 /** Carries everything the app knows back to the extension when resolving links. */
 data class LinkRequest(
     val episode: Episode,
@@ -138,7 +154,12 @@ data class ExtensionSetting(
     val summary: String? = null,
     val type: Type,
     val defaultValue: String = "",
-) { enum class Type { SWITCH, TEXT, PASSWORD, LIST } }
+) {
+    /** Choix proposés quand [type] = LIST (libellés = valeurs). Champ additif hors constructeur. */
+    var options: List<String> = emptyList()
+
+    enum class Type { SWITCH, TEXT, PASSWORD, LIST }
+}
 
 /** Identity/capability block, mirrors assets/extension.json (see docs/en/04). */
 data class ExtensionInfo(

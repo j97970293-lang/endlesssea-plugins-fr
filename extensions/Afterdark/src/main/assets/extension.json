@@ -1,8 +1,8 @@
 {
   "id": "fr.endlesssea.ext.afterdark",
   "name": "Afterdark",
-  "version": 20,
-  "versionName": "1.3.0",
+  "version": 21,
+  "versionName": "1.4.0",
   "apiVersion": 1,
   "description": {
     "fr": "Afterdark — films et séries en VOSTFR, multi-serveurs (catalogue TMDB)"

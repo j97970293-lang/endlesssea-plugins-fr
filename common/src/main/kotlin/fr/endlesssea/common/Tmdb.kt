@@ -24,7 +24,11 @@ object Tmdb {
     suspend fun json(http: Http, path: String, query: String = ""): JsonNode? {
         val sep = if ("?" in path) "&" else "?"
         val url = "$BASE$path$sep" + "api_key=$KEY&language=fr-FR" + (if (query.isBlank()) "" else "&$query")
-        return http.getOrNull(url, headers)?.asJsonOrNull()
+        // Les métadonnées TMDB bougent peu : 6 h de cache disque évitent de
+        // refrapper l'API à chaque ouverture d'écran (app 0.7.0+).
+        val raw = http.cache.getOrPut("tmdb:$path?$query") { http.getOrNull(url, headers)?.text }
+            ?: return null
+        return Json.parseOrNull(raw)
     }
 
     /** Une page de résultats TMDB → [SearchItem]. `idPrefix` préfixe l'URL interne. */
@@ -47,6 +51,19 @@ object Tmdb {
         return root["results"].list.mapNotNull { card(it, idPrefix) }
     }
 
+
+    /** Genres TMDB (films + séries) en français, pour `SearchItem.genres`. */
+    val GENRES: Map<Int, String> = mapOf(
+        28 to "Action", 12 to "Aventure", 16 to "Animation", 35 to "Comédie",
+        80 to "Crime", 99 to "Documentaire", 18 to "Drame", 10751 to "Famille",
+        14 to "Fantastique", 36 to "Histoire", 27 to "Horreur", 10402 to "Musique",
+        9648 to "Mystère", 10749 to "Romance", 878 to "Science-Fiction",
+        10770 to "Téléfilm", 53 to "Thriller", 10752 to "Guerre", 37 to "Western",
+        10759 to "Action & Aventure", 10762 to "Jeunesse", 10763 to "Information",
+        10764 to "Téléréalité", 10765 to "Science-Fiction & Fantastique",
+        10766 to "Feuilleton", 10767 to "Débat", 10768 to "Guerre & Politique",
+    )
+
     fun card(r: JsonNode, idPrefix: String, fallbackType: String? = null): SearchItem? {
         val id = r["id"].int ?: return null
         val type = (r.str("media_type") ?: fallbackType)?.takeIf { it == "movie" || it == "tv" } ?: return null
@@ -59,7 +76,11 @@ object Tmdb {
             posterUrl = r.str("poster_path")?.let { IMG + it },
             year = date?.take(4)?.toIntOrNull(),
             type = if (type == "tv") MediaType.SERIES else MediaType.MOVIE,
-        )
+        ).also { item ->
+            // Champs additifs de l'app 0.7.0 : badge ⭐ et genres sur la vignette.
+            r["vote_average"].double?.takeIf { v -> v > 0.0 }?.let { item.rating = it }
+            item.genres = r["genre_ids"].list.mapNotNull { g -> g.int?.let(GENRES::get) }
+        }
     }
 
     /** Fiche complète (film ou série, saisons/épisodes inclus) pour un id TMDB. */
@@ -147,20 +168,10 @@ object Tmdb {
         val d = json(http, "/$kind/$tmdb", "append_to_response=videos,credits")
             ?: return details
 
-        // --- Note : l'API Endless Sea n'a aucun champ « rating ». En attendant,
-        // on la place en tête du synopsis, seul endroit libre affiché par l'app.
-        val score = d["vote_average"].double?.takeIf { it > 0.0 }
-        val votes = d["vote_count"].int ?: 0
-        val withNote = if (score == null || details.synopsis?.startsWith("⭐") == true) {
-            details
-        } else {
-            val note = "⭐ %.1f/10".format(score).replace('.', ',') +
-                (if (votes > 0) " · $votes votes (TMDB)" else " (TMDB)")
-            details.copy(
-                synopsis = listOfNotNull(note, details.synopsis?.takeIf { it.isNotBlank() })
-                    .joinToString("\n\n")
-            )
-        }
+        // --- Note : champs dédiés depuis l'app 0.7.0 (plus de bricolage dans le synopsis).
+        val withNote = details
+        d["vote_average"].double?.takeIf { it > 0.0 }?.let { withNote.rating = it }
+        d["vote_count"].int?.takeIf { it > 0 }?.let { withNote.ratingCount = it }
 
         val videos = d["videos"]["results"].list
         fun pick(lang: String?, type: String) = videos.firstOrNull {

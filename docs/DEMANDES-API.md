@@ -1,5 +1,13 @@
 # Demandes d'évolution — application Endless Sea
 
+> **État : résolu.** Tous les points de ce document ont été livrés par l'app
+> **0.7.0** (issue [endlesssea#1](https://github.com/j97970293-lang/endlesssea/issues/1),
+> fermée) : `categories()` + `HomeCategory`, filtres type/langue transmis,
+> `rating`/`ratingCount`, `ExtensionSetting.options`, préférence VF/VOSTFR globale,
+> `SearchItem.audioLangs`/`genres`, `ExtensionContext.cacheDir`.
+> Les extensions les exploitent depuis la **v1.4.0** ; le document reste ici comme
+> trace de la demande et des contournements historiques.
+
 Ce document liste ce que les extensions **ne peuvent pas faire** aujourd'hui, pourquoi,
 et le changement minimal côté application qui le débloquerait. Il sert de base à une
 demande dans le dépôt [`endlesssea`](https://github.com/j97970293-lang/endlesssea).

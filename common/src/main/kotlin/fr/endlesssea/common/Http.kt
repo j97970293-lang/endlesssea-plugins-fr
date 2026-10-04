@@ -19,7 +19,11 @@ import java.net.URLEncoder
  *    la WebView de vérification de l'app puis le rejeu automatique de l'appel
  *    (équivalent natif de `CloudflareKiller`).
  */
-class Http(private val ctx: ExtensionContext) {
+class Http(internal val ctx: ExtensionContext) {
+
+    /** Cache disque partagé (app 0.7.0+ ; inopérant et sans effet avant). */
+    val cache: Cache by lazy { Cache(ctx) }
+
 
     val userAgent: String get() = ctx.http.userAgent
 

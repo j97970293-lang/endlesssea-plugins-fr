@@ -123,29 +123,28 @@ Ces extensions ne stockent ni n'hébergent aucun contenu : elles se contentent
 d'indexer des sites publics. Vous êtes responsable de l'usage que vous en
 faites et du respect du droit applicable dans votre pays.
 
-## Parcourir par genre, et langue préférée (v1.3.0)
+## Catalogues par genre, notes, langues (v1.4.0 — app 0.7.0+)
 
-L'application ne réclame qu'une seule rangée par extension (`category = "main"`)
-et envoie toujours un filtre vide : les rangées « Action », « Horreur »,
-« Tendances »… déclarées par chaque source seraient donc invisibles.
+L'application sait désormais demander **toutes** les rangées déclarées par une
+extension (`categories()`), ce qui expose directement nos catalogues :
+Action, Horreur, Animation, Tendances, Planning, Dernières sorties… selon la source
+(de 2 à 14 rangées). Elles apparaissent sur l'Accueil, dans Explorer et dans « Tout voir ».
 
-En attendant une évolution de l'app (voir `docs/DEMANDES-API.md`), elles sont
-accessibles **depuis la recherche** :
+| Apport | Détail |
+|---|---|
+| **Catalogues par genre** | chaque `HomeRow` devient une `HomeCategory` navigable |
+| **Notes** | `rating`/`ratingCount` sur la fiche **et** badge ⭐ sur les vignettes (TMDB) |
+| **Genres de vignette** | `SearchItem.genres` depuis les `genre_ids` TMDB (libellés FR) |
+| **Badges VF / VOSTFR** | `SearchItem.audioLangs`, déduits du titre quand la source l'indique |
+| **Langue préférée** | réglage `pref_lang` en vraie liste (`auto`, `vf`, `vostfr`, `vo`, `multi`), avec repli sur la préférence globale `app.pref_lang` |
+| **Cache disque** | métadonnées TMDB mémorisées 6 h via `ExtensionContext.cacheDir` |
+| **Vignettes d'épisodes** | complétées par les *stills* TMDB quand la source n'en fournit pas |
 
-```
-genre:action        #horreur        :animation        cat:tendances
-```
+La recherche par `genre:action` / `#horreur` reste valable (utile sur une app plus ancienne),
+mais n'est plus nécessaire.
 
-La correspondance ignore accents, emojis et majuscules ; sans correspondance,
-la recherche normale reprend la main.
-
-Deux réglages s'ajoutent par source :
-
-| Réglage | Valeurs | Effet |
+| Réglage par source | Valeurs | Effet |
 |---|---|---|
-| `pref_lang` | `vf`, `vostfr`, `vo`, `multi`, vide | place les lecteurs de cette langue en tête (MULTI en second) |
 | `site_url` | une adresse | force le domaine de la source |
-
-Les fiches affichent aussi, quand un identifiant TMDB est connu : la **note**
-(en tête du synopsis, faute de champ dédié dans l'API), la **bande-annonce**,
-la **distribution** et les **vignettes d'épisodes** manquantes.
+| `pref_lang` | `auto`, `vf`, `vostfr`, `vo`, `multi` | place les lecteurs de cette langue en tête (MULTI en second) |
+| `playlist_url`, `franco_playlist` | une URL M3U | Télé FR Direct uniquement |

@@ -105,3 +105,5 @@ Depuis la v1.2.0, les providers n'implémentent plus `load(url)` mais
 (bande-annonce + distribution) quand `tmdbIdOf()` trouve un identifiant —
 `externalIds["tmdb"]` ou les conventions de charge utile du dépôt
 (`movie|123`, `x:movie:123`, `tv|123|1|1`…).
+
+| 0.7.0 | `categories()`/`HomeCategory`, `rating`/`ratingCount`, `SearchItem.audioLangs`/`genres`, `ExtensionSetting.options`, `ExtensionContext.cacheDir`, préférence globale `app.pref_lang` | v1.4.0 — rangées exposées en catalogues, notes et genres TMDB sur les vignettes, réglage de langue en liste, cache disque 6 h des métadonnées |

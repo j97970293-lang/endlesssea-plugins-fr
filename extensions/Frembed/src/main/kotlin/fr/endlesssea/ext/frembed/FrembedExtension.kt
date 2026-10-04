@@ -34,7 +34,7 @@ class FrembedExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://frembed.surf"
     override val providerName = "Frembed"
     override val extensionId = "fr.endlesssea.ext.frembed"
-    override val versionCode = 13
+    override val versionCode = 14
     override val descriptionText = "Réseau de lecteurs FR indexé par TMDB (Voe, Dood, Uqload…)."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 

@@ -3,6 +3,7 @@ package dev.endlesssea.extensions.api
 import dev.endlesssea.extensions.api.model.ExtensionInfo
 import dev.endlesssea.extensions.api.model.ExtensionSetting
 import dev.endlesssea.extensions.api.model.FilterSet
+import dev.endlesssea.extensions.api.model.HomeCategory
 import dev.endlesssea.extensions.api.model.LinkRequest
 import dev.endlesssea.extensions.api.model.MainPageRequest
 import dev.endlesssea.extensions.api.model.MediaDetails
@@ -26,6 +27,13 @@ interface EsExtension {
     /** Home rows ("recently_added", "trending", …). Default: empty. */
     suspend fun getMainPage(request: MainPageRequest): PagedResult<SearchItem> =
         PagedResult(emptyList(), request.page, hasNextPage = false)
+
+    /**
+     * Catalog rows this extension offers ("genres", "trending", "planning"…).
+     * The first entry acts as "main". Default: empty = single "main" row as before.
+     * (Binary-compatible: implementations stay optional.)
+     */
+    suspend fun categories(): List<HomeCategory> = emptyList()
 
     /** Full-text + filtered search (spec §12). */
     suspend fun search(query: String, page: Int, filters: FilterSet): PagedResult<SearchItem>
