@@ -38,7 +38,7 @@ class WaveWatchExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://wavewatch.top"
     override val providerName = "WaveWatch"
     override val extensionId = "fr.endlesssea.ext.wavewatch"
-    override val versionCode = 17
+    override val versionCode = 18
     override val descriptionText = "Films, séries, animes et chaînes TV en direct."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES, MediaType.ANIME, MediaType.OTHER)
 
@@ -116,7 +116,7 @@ class WaveWatchExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     // Fiche
     // -----------------------------------------------------------------------
 
-    override suspend fun load(url: String): MediaDetails {
+    override suspend fun details(url: String): MediaDetails {
         // ---- Chaîne en direct ----
         if ("/live/" in url) {
             val id = url.substringAfterLast('/')

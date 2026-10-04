@@ -45,7 +45,7 @@ class XalaflixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val mainUrl get() = userUrl ?: resolved ?: defaultUrl
     override val providerName = "Xalaflix"
     override val extensionId = "fr.endlesssea.ext.xalaflix"
-    override val versionCode = 16
+    override val versionCode = 17
     override val descriptionText = "Films et séries VF/VOSTFR, serveurs du site et agrégateurs FR."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 
@@ -124,7 +124,7 @@ class XalaflixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
         return null
     }
 
-    override suspend fun load(url: String): MediaDetails {
+    override suspend fun details(url: String): MediaDetails {
         val base = ensureDomain()
         val html = http.get(url).verifyNotBlocked().requireOk().text
         val slug = url.trimEnd('/').substringAfterLast('/')

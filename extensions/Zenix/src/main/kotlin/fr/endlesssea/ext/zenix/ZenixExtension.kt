@@ -35,7 +35,7 @@ class ZenixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://zenix.best"
     override val providerName = "Zenix"
     override val extensionId = "fr.endlesssea.ext.zenix"
-    override val versionCode = 9
+    override val versionCode = 10
     override val descriptionText = "Films et séries VF/VOSTFR, serveurs du site + agrégateurs TMDB."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 
@@ -102,7 +102,7 @@ class ZenixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
         }
     }
 
-    override suspend fun load(url: String): MediaDetails {
+    override suspend fun details(url: String): MediaDetails {
         var fetchUrl = url
         var doc = http.get(fetchUrl).requireOk().document
         if ("/episode/" in fetchUrl) {

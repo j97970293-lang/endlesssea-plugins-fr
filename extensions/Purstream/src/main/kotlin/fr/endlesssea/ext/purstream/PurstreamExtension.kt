@@ -32,12 +32,36 @@ import fr.endlesssea.common.urlEncode
  */
 class PurstreamExtension(ctx: ExtensionContext) : EsProvider(ctx) {
 
-    override val defaultUrl = "https://purstream.ad"
-    private val apiUrl = "https://api.purstream.ad/api/v1/"
+    override val defaultUrl = "https://purstream.tech"   // purstream.ad redirige désormais vers le wiki
+
+    /** Annuaire officiel : expose le domaine courant en JSON. */
+    private val registryUrl = "https://purstream.wiki/api/status"
+
+    @Volatile private var resolved: String? = null
+
+    /**
+     * Adresse courante : réglage utilisateur → annuaire `purstream.wiki`
+     * → domaine par défaut. Le site tourne sur un domaine qui change souvent,
+     * mais l'annuaire, lui, est stable.
+     */
+    override val mainUrl: String get() = userUrl ?: resolved ?: defaultUrl
+
+    private suspend fun ensureDomain(): String {
+        userUrl?.let { return it }
+        resolved?.let { return it }
+        val domain = http.getOrNull(registryUrl, mapOf("Accept" to "application/json"))
+            ?.asJsonOrNull()?.str("domain")?.trim()?.trimEnd('/')
+        val candidate = normalizeSiteUrl(domain)
+        resolved = candidate ?: defaultUrl
+        return resolved!!
+    }
+
+    /** L'API vit sur le sous-domaine `api.` du domaine courant. */
+    private suspend fun apiUrl(): String = "https://api." + Text.host(ensureDomain()) + "/api/v1/"
 
     override val providerName = "Purstream"
     override val extensionId = "fr.endlesssea.ext.purstream"
-    override val versionCode = 7
+    override val versionCode = 8
     override val descriptionText = "Films et séries VF/VOSTFR en HLS direct (API officielle du site)."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 
@@ -56,7 +80,8 @@ class PurstreamExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     private val apiHeaders
         get() = mapOf("Accept" to "application/json", "Origin" to mainUrl, "Referer" to "$mainUrl/")
 
-    private suspend fun api(path: String): JsonNode? = http.getOrNull(apiUrl + path, apiHeaders)?.asJsonOrNull()
+    private suspend fun api(path: String): JsonNode? =
+        http.getOrNull(apiUrl() + path, apiHeaders)?.asJsonOrNull()
 
     // -----------------------------------------------------------------------
     // Accueil
@@ -119,7 +144,7 @@ class PurstreamExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     // Fiche
     // -----------------------------------------------------------------------
 
-    override suspend fun load(url: String): MediaDetails {
+    override suspend fun details(url: String): MediaDetails {
         val id = url.trimEnd('/').substringAfterLast('/').toIntOrNull()
             ?: throw SourceException.ParseError("identifiant absent de l'URL")
         val isTv = url.contains("/serie/")

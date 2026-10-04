@@ -32,7 +32,7 @@ class CineStreamExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://cinestream.info"
     override val providerName = "CineStream"
     override val extensionId = "fr.endlesssea.ext.cinestream"
-    override val versionCode = 6
+    override val versionCode = 7
     override val descriptionText = "Films VF/VOSTFR, une quinzaine de lecteurs par titre."
     override val supportedTypes = setOf(MediaType.MOVIE)
 
@@ -81,7 +81,7 @@ class CineStreamExtension(ctx: ExtensionContext) : EsProvider(ctx) {
         return out.values.toList()
     }
 
-    override suspend fun load(url: String): MediaDetails {
+    override suspend fun details(url: String): MediaDetails {
         val html = http.get(url, baseHeaders).requireOk().text
         val ogTitle = Regex("""property="og:title" content="([^"]+)"""").find(html)?.groupValues?.get(1)
             ?: throw SourceException.ParseError("fiche illisible")

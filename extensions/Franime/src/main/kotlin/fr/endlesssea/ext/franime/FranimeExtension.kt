@@ -41,7 +41,7 @@ class FranimeExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://franime.fr"
     override val providerName = "FRAnime"
     override val extensionId = "fr.endlesssea.ext.franime"
-    override val versionCode = 14
+    override val versionCode = 15
     override val descriptionText = "Animes VF et VOSTFR, catalogue FRAnime et métadonnées Kitsu."
     override val supportedTypes = setOf(MediaType.ANIME, MediaType.MOVIE)
 
@@ -187,7 +187,7 @@ class FranimeExtension(ctx: ExtensionContext) : EsProvider(ctx) {
         return out
     }
 
-    override suspend fun load(url: String): MediaDetails {
+    override suspend fun details(url: String): MediaDetails {
         val id = url.trimEnd('/').substringAfterLast('/')
         val seasons = fetchSeasons(id)
         if (seasons.isEmpty()) throw SourceException.VideoUnavailable("anime indisponible sur FRAnime")

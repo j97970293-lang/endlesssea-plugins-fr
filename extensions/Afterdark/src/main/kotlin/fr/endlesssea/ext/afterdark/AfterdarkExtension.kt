@@ -41,7 +41,7 @@ class AfterdarkExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://afd926.mom"
     override val providerName = "Afterdark"
     override val extensionId = "fr.endlesssea.ext.afterdark"
-    override val versionCode = 18
+    override val versionCode = 19
     override val descriptionText = "Films et séries en VOSTFR, multi-serveurs."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 
@@ -94,7 +94,7 @@ class AfterdarkExtension(ctx: ExtensionContext) : EsProvider(ctx) {
         return root["results"].list.mapNotNull { card(it, it.str("media_type") == "tv") }
     }
 
-    override suspend fun load(url: String): MediaDetails {
+    override suspend fun details(url: String): MediaDetails {
         val tmdb = Regex("""/(movie|tv)/(\d+)""").find(url)?.groupValues?.get(2)
             ?: throw SourceException.VideoUnavailable("URL non reconnue")
 

@@ -87,3 +87,21 @@ validation repose sur :
 2. la compilation Gradle/Android en CI (`./gradlew packageAll`) ;
 3. une relecture ligne à ligne de chaque protocole de site par rapport au
    plugin CloudStream d'origine (regex, endpoints, en-têtes, ordre des appels).
+
+## Suivi de l'API Endless Sea
+
+| Version de l'app | Nouveauté | Prise en charge ici |
+|---|---|---|
+| 0.4.0 | `ExtensionContext.settings` (réglages injectés) | v1.1.0 — réglage `site_url` sur 16 sources, playlists M3U pour Télé FR Direct |
+| 0.5.0 | `MediaDetails.trailerUrl` et `MediaDetails.characters` (`CharacterCredit`) | v1.2.0 — remplis depuis TMDB (`append_to_response=videos,credits`) pour toute fiche dont l'identifiant TMDB est connu |
+
+Les deux ajouts sont des propriétés **hors constructeur** : `apiVersion` reste à 1 et
+les binaires précédents continuent de fonctionner.
+
+### Point d'entrée unique des fiches
+
+Depuis la v1.2.0, les providers n'implémentent plus `load(url)` mais
+`details(url)` : `EsProvider.load` est `final` et ajoute l'enrichissement TMDB
+(bande-annonce + distribution) quand `tmdbIdOf()` trouve un identifiant —
+`externalIds["tmdb"]` ou les conventions de charge utile du dépôt
+(`movie|123`, `x:movie:123`, `tv|123|1|1`…).

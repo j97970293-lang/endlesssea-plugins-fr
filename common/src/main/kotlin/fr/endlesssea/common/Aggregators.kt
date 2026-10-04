@@ -111,6 +111,10 @@ object Aggregators {
         season: Int? = null,
         episode: Int? = null,
     ): List<ServerEntry> {
+        // L'API expose tout sous /api/… : on tolère les deux formes d'entrée
+        // (« https://api.movix.men » ou « https://api.movix.men/api »).
+        @Suppress("NAME_SHADOWING")
+        val api = api.trimEnd('/').let { if (it.endsWith("/api")) it else "$it/api" }
         val site = api.removePrefix("https://api.").substringBefore('/')
         val h = mapOf("Accept" to "application/json", "Origin" to "https://$site", "Referer" to "https://$site/")
         val s = season ?: 1

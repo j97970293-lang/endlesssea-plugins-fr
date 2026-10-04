@@ -36,10 +36,10 @@ import java.util.Base64
  */
 class UnJour1FilmExtension(ctx: ExtensionContext) : EsProvider(ctx) {
 
-    override val defaultUrl = "https://1jour1film0826b.website"
+    override val defaultUrl = "https://1jour1film0926b.lol"
     override val providerName = "1Jour1Film"
     override val extensionId = "fr.endlesssea.ext.unjour1film"
-    override val versionCode = 13
+    override val versionCode = 14
     override val descriptionText = "Films et séries VF en streaming."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 
@@ -157,7 +157,7 @@ class UnJour1FilmExtension(ctx: ExtensionContext) : EsProvider(ctx) {
             runCatching { String(Base64.getDecoder().decode(m.groupValues[1])) }.getOrNull()
         }.toList()
 
-    override suspend fun load(url: String): MediaDetails {
+    override suspend fun details(url: String): MediaDetails {
         val html = http.get(url).verifyNotBlocked().requireOk().text
         val title = Regex("""<title>([^<]+)</title>""").find(html)?.groupValues?.get(1)
             ?.substringBefore('|')?.trim() ?: url.trimEnd('/').substringAfterLast('/').replace('-', ' ')

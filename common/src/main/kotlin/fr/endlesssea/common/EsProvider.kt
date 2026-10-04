@@ -316,6 +316,43 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
     protected fun paged(items: List<SearchItem>, page: Int, pageSize: Int = 20) =
         PagedResult(items, page, items.size >= pageSize)
 
+    // -----------------------------------------------------------------------
+    // Fiche : point d'entrée unique + enrichissement TMDB (app 0.5.0)
+    // -----------------------------------------------------------------------
+
+    /**
+     * Construit la fiche propre à la source. Les providers implémentent ceci
+     * plutôt que [load] : le socle se charge ensuite d'ajouter la
+     * bande-annonce et la distribution quand un identifiant TMDB est connu.
+     */
+    protected abstract suspend fun details(url: String): MediaDetails
+
+    final override suspend fun load(url: String): MediaDetails {
+        val d = details(url)
+        if (d.characters.isNotEmpty() && d.trailerUrl != null) return d
+        val tmdb = tmdbIdOf(d) ?: return d
+        val isTv = d.type == MediaType.SERIES || d.type == MediaType.ANIME
+        return runCatching { Tmdb.enrichOrSame(http, d, tmdb, isTv) }.getOrDefault(d)
+    }
+
+    /**
+     * Identifiant TMDB déduit de la fiche : `externalIds`, puis conventions de
+     * charge utile du dépôt (`movie|123`, `x:movie:123`, `tv|123|1|1`,
+     * `/movie/123`…). Surchargeable quand la source le stocke ailleurs.
+     */
+    protected open fun tmdbIdOf(d: MediaDetails): String? {
+        d.externalIds["tmdb"]?.takeIf { it.isNotBlank() }?.let { return it }
+        val haystacks = listOfNotNull(
+            d.url,
+            d.seasons.firstOrNull()?.episodes?.firstOrNull()?.data,
+        )
+        for (h in haystacks) {
+            Regex("""(?:^|[|:/])(?:movie|tv|serie)[|:/](\d{2,8})(?:[|:/]|$)""")
+                .find(h)?.groupValues?.get(1)?.let { return it }
+        }
+        return null
+    }
+
     override suspend fun loadLinks(data: LinkRequest): List<VideoLink> =
         resolveServers(servers(data.episode.data), data.preferredServer)
 

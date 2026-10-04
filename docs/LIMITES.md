@@ -1,7 +1,7 @@
 # Limites connues du projet
 
 Document d'honnêteté technique : ce que ce dépôt **ne** garantit **pas**, et pourquoi.
-État au 4 octobre 2026 — 17 extensions, v1.1.0, API Endless Sea `apiVersion 1` (app 0.4.0).
+État au 4 octobre 2026 — 17 extensions, v1.2.0, API Endless Sea `apiVersion 1` (app 0.5.0).
 
 ---
 
@@ -50,7 +50,9 @@ l'utilisateur alors que l'extension est correcte est un scénario attendu.
 
 C'est la limite la plus importante à connaître avant d'ouvrir un ticket.
 
-- **Aucune exécution réelle n'a été faite.** La correction a été vérifiée par
+- **Les sites, eux, ont été sondés pour de vrai** (scan du 4 octobre 2026 : domaines,
+  API, agrégateurs — voir le journal dans le README). En revanche :
+- **Aucune exécution réelle du code n'a été faite.** La correction a été vérifiée par
   **compilation Kotlin** (typecheck, exit 0) et par **build Android en CI**. Le
   sandbox ne disposait ni d'Android SDK local, ni d'émulateur, ni de l'application
   Endless Sea : **aucun `homeRows`, `search`, `episode` ou `servers` n'a été appelé

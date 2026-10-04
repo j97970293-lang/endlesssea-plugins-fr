@@ -36,7 +36,7 @@ class FrenchStreamExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://fs27.lol"
     override val providerName = "French Stream"
     override val extensionId = "fr.endlesssea.ext.frenchstream"
-    override val versionCode = 7
+    override val versionCode = 8
     override val descriptionText = "Films & séries VF/VOSTFR, multi-lecteurs."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 
@@ -100,7 +100,7 @@ class FrenchStreamExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     // Fiche
     // -----------------------------------------------------------------------
 
-    override suspend fun load(url: String): MediaDetails {
+    override suspend fun details(url: String): MediaDetails {
         val newsId = Regex("""newsid=(\d+)""").find(url)?.groupValues?.get(1)
             ?: throw SourceException.ParseError("URL French Stream invalide")
         val res = http.get("$mainUrl/index.php?newsid=$newsId", baseHeaders).requireOk()

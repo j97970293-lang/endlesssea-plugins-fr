@@ -22,8 +22,6 @@ object TmdbEmbeds {
             "https://vidsrc.cc/v2/embed/tv/$tmdb/$season/$episode" to "VidSrc.cc",
             "https://www.vidsrc.wtf/api/2/tv/?id=$tmdb&s=$season&e=$episode" to "VidSrc.wtf",
             "https://www.2embed.cc/embedtv/$tmdb&s=$season&e=$episode" to "2Embed",
-            "https://111movies.com/tv/$tmdb/$season/$episode" to "111Movies",
-            "https://www.vidking.net/embed/tv/$tmdb/$season/$episode?autoPlay=true" to "VidKing",
             "https://vidnest.fun/tv/$tmdb/$season/$episode" to "VidNest",
         ) else listOf(
             "https://player.videasy.net/movie/$tmdb?overlay=true" to "Videasy",
@@ -33,8 +31,6 @@ object TmdbEmbeds {
             "https://vidsrc.cc/v2/embed/movie/$tmdb" to "VidSrc.cc",
             "https://www.vidsrc.wtf/api/3/movie/?id=$tmdb" to "VidSrc.wtf",
             "https://www.2embed.cc/embed/$tmdb" to "2Embed",
-            "https://111movies.com/movie/$tmdb" to "111Movies",
-            "https://www.vidking.net/embed/movie/$tmdb?autoPlay=true" to "VidKing",
             "https://vidnest.fun/movie/$tmdb" to "VidNest",
         )
         return list.map { (url, name) -> ServerEntry(name, url) }

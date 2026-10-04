@@ -46,7 +46,7 @@ class AnimeSamaExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://anime-sama.to"
     override val providerName = "Anime-Sama"
     override val extensionId = "fr.endlesssea.ext.animesama"
-    override val versionCode = 7
+    override val versionCode = 8
     override val descriptionText =
         "Animes VF & VOSTFR : catalogue complet, saisons, films et OAV, miroirs multiples."
     override val supportedTypes = setOf(MediaType.ANIME, MediaType.MOVIE, MediaType.OVA)
@@ -181,7 +181,7 @@ class AnimeSamaExtension(ctx: ExtensionContext) : EsProvider(ctx) {
 
     private data class Pane(val name: String, val paths: List<String>, val natural: Int?, val kind: Int)
 
-    override suspend fun load(url: String): MediaDetails {
+    override suspend fun details(url: String): MediaDetails {
         val slug = url.trimEnd('/').substringAfterLast('/')
         val res = http.get("$mainUrl/catalogue/$slug/", baseHeaders).requireOk()
         val doc = res.document

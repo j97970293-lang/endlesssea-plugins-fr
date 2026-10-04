@@ -26,6 +26,22 @@ conversion.
 Les fichiers `.esx` peuvent aussi être téléchargés un par un depuis l'onglet
 **Releases** et installés manuellement.
 
+## Journal des sources (scan du 4 octobre 2026)
+
+Chaque source a été sondée en direct (requêtes réelles sur ses pages et API) :
+
+| Source | Constat | Action |
+|---|---|---|
+| Purstream | `purstream.ad` ne sert plus que le wiki ; l'annuaire `purstream.wiki/api/status` publie le domaine courant (`purstream.tech`) | domaine par défaut mis à jour **+ résolution automatique** via l'annuaire |
+| Flemmix | `flemmix.cloud` n'est plus qu'une page-relais (certificat Let's Encrypt **de test**, rejeté par Android) pointant en base64 vers `flemmix.eu` | domaine par défaut → `flemmix.eu` (bouclier `h_check=25` toujours valide) |
+| 1Jour1Film | `1jour1film0826b.website` redirige vers `1jour1film0926b.lol` ; `admin-ajax.php` (`j1f_catalogue`…) répond toujours | domaine par défaut mis à jour |
+| Movix (réseau) | l'API exige `/api/…` ; l'agrégateur appelait `api.movix.men/purstream/…` → **404 systématique** | préfixe `/api` normalisé — corrige aussi Xalaflix et Zenix qui utilisent ce réseau |
+| VidKing, 111Movies | domaines **morts** (SERVFAIL sur Google et Cloudflare DNS) | retirés des lecteurs publics |
+| Xalaflix, Anime-Sama, AnimeSite, Vostfree, French Stream, Zenix, WaveWatch, Frembed, 1Jour1Film, Afterdark | protocoles re-testés : sélecteurs, API et agrégateurs (`playerix`, `zeus`, `mouve`, `apiwiflix`, `moviesapi`) conformes | aucun changement |
+| CineStream | `cinestream.info` renvoie 404 depuis le bac à sable (y compris via un proxy de lecture) alors que les suiveurs d'adresses le donnent en ligne → blocage des IP de datacentre probable | inchangé ; corrigible via le réglage `site_url` |
+| FRAnime, AnimoFlix | Cloudflare 403 sur nos IP ; AnimoFlix confirmé vivant et conforme via proxy de lecture | inchangé |
+
+
 ## Réglages par source (Endless Sea 0.4.0+)
 
 Depuis la version 0.4.0 de l'application, les réglages déclarés par une extension
@@ -57,7 +73,7 @@ Concrètement : quand une source change de domaine, **plus besoin d'attendre une
 | **French Stream** | films, séries | DLE, recherche POST, `film_api.php`, `series/{id}.js` |
 | **1Jour1Film** | films, séries | WordPress `admin-ajax`, scripts inline base64 |
 | **Movix** | films, séries | catalogue TMDB-FR + réseau `api.movix.men` |
-| **Purstream** | films, séries | API `api.purstream.ad/api/v1` |
+| **Purstream** | films, séries | API `api.{domaine}/api/v1`, domaine courant lu sur `purstream.wiki` |
 | **Télé FR Direct** | TV en direct | listes IPTV-org + chaînes YouTube live |
 | **Vostfree** | animes, films | DLE, jetons de lecteur par épisode |
 | **WaveWatch** | films, séries, animes, TV | API maison (proxy TMDB), `wwembed`, zeus/mouve |

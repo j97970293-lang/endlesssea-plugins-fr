@@ -75,6 +75,23 @@ data class MediaDetails(
     val servers: List<ServerRef> = emptyList(),
     val languages: List<AudioLang> = emptyList(),
     val externalIds: Map<String, String> = emptyMap(),
+) {
+    /**
+     * Champs enrichis ajoutés hors constructeur (compatibilité binaire apiVersion 1) :
+     * les extensions existantes continuent de fonctionner sans recompilation ;
+     * les nouvelles peuvent peupler personnages/doubleurs/bande-annonce.
+     */
+    var characters: List<CharacterCredit> = emptyList()
+    var trailerUrl: String? = null
+}
+
+/** Personnage + voix du doublage (ex. AniList/fragment anime). */
+data class CharacterCredit(
+    val name: String,
+    val role: String = "",            // « Principal », « Secondaire »…
+    val voiceActor: String? = null,
+    val voiceActorLang: String? = null, // « JA », « FR »…
+    val imageUrl: String? = null,
 )
 
 data class SubtitleTrack(

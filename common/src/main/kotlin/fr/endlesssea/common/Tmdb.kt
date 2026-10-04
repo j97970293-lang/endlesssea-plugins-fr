@@ -1,5 +1,6 @@
 package fr.endlesssea.common
 
+import dev.endlesssea.extensions.api.model.CharacterCredit
 import dev.endlesssea.extensions.api.model.Episode
 import dev.endlesssea.extensions.api.model.MediaDetails
 import dev.endlesssea.extensions.api.model.MediaType
@@ -73,7 +74,7 @@ object Tmdb {
         val url = "$idPrefix:${if (isTv) "tv" else "movie"}:$tmdb"
 
         if (!isTv) {
-            return MediaDetails(
+            return enrichOrSame(http, MediaDetails(
                 id = url, url = url, title = title, synopsis = plot, posterUrl = poster,
                 bannerUrl = backdrop, type = MediaType.MOVIE, year = year, genres = genres,
                 durationMin = d["runtime"].int?.takeIf { it > 0 },
@@ -81,7 +82,7 @@ object Tmdb {
                 seasons = listOf(
                     Season(1, "Film", listOf(Episode(id = url, number = 1f, season = 1, title = title, data = url))),
                 ),
-            )
+            ), tmdb, false)
         }
 
         val seasonNumbers = d["seasons"].list.mapNotNull { it["season_number"].int?.takeIf { n -> n >= 1 } }.sorted()
@@ -100,10 +101,14 @@ object Tmdb {
         }
         if (seasons.isEmpty()) return null
 
-        return MediaDetails(
-            id = url, url = url, title = title, synopsis = plot, posterUrl = poster,
-            bannerUrl = backdrop, type = MediaType.SERIES, year = year, genres = genres,
-            episodeCount = seasons.sumOf { it.episodes.size }, seasons = seasons,
+        return enrichOrSame(
+            http,
+            MediaDetails(
+                id = url, url = url, title = title, synopsis = plot, posterUrl = poster,
+                bannerUrl = backdrop, type = MediaType.SERIES, year = year, genres = genres,
+                episodeCount = seasons.sumOf { it.episodes.size }, seasons = seasons,
+            ),
+            tmdb, true,
         )
     }
 
@@ -125,4 +130,52 @@ object Tmdb {
     suspend fun imdbId(http: Http, tmdb: String, isTv: Boolean): String? =
         json(http, "/${if (isTv) "tv" else "movie"}/$tmdb/external_ids")
             ?.str("imdb_id")?.takeIf { it.startsWith("tt") }
+
+    // -----------------------------------------------------------------------
+    // Enrichissement (Endless Sea 0.5.0 : MediaDetails.trailerUrl / .characters)
+    // -----------------------------------------------------------------------
+
+    /**
+     * Ajoute la bande-annonce et la distribution à une fiche déjà construite.
+     *
+     * Les deux champs sont hors constructeur côté API : les remplir est sans
+     * risque pour une app plus ancienne, qui les ignorera simplement.
+     * Priorité à la bande-annonce française, repli sur la version originale.
+     */
+    suspend fun enrich(http: Http, details: MediaDetails, tmdb: String, isTv: Boolean): MediaDetails {
+        val kind = if (isTv) "tv" else "movie"
+        val d = json(http, "/$kind/$tmdb", "append_to_response=videos,credits")
+            ?: return details
+
+        val videos = d["videos"]["results"].list
+        fun pick(lang: String?, type: String) = videos.firstOrNull {
+            it.str("site").equals("YouTube", true) &&
+                it.str("type").equals(type, true) &&
+                (lang == null || it.str("iso_639_1").equals(lang, true))
+        }?.str("key")
+        val key = pick("fr", "Trailer") ?: pick("fr", "Teaser")
+            ?: pick(null, "Trailer") ?: pick(null, "Teaser")
+        if (key != null) details.trailerUrl = "https://www.youtube.com/watch?v=$key"
+
+        details.characters = d["credits"]["cast"].list.take(25).mapNotNull { c ->
+            val actor = c.str("name")?.trim().orEmpty()
+            val role = c.str("character")?.trim().orEmpty()
+            if (actor.isEmpty() && role.isEmpty()) return@mapNotNull null
+            CharacterCredit(
+                name = role.ifEmpty { actor },
+                role = if (role.isEmpty()) "" else actor,
+                voiceActor = actor.takeIf { it.isNotEmpty() && role.isNotEmpty() },
+                voiceActorLang = null,
+                imageUrl = c.str("profile_path")?.let { IMG + it },
+            )
+        }
+        return details
+    }
+
+    /** Variante tolérante : ne casse jamais la fiche si TMDB est injoignable. */
+    suspend fun enrichOrSame(http: Http, details: MediaDetails, tmdb: String?, isTv: Boolean): MediaDetails {
+        val id = tmdb?.trim()?.takeIf { it.isNotEmpty() && it.all(Char::isDigit) } ?: return details
+        return runCatching { enrich(http, details, id, isTv) }.getOrDefault(details)
+    }
+
 }

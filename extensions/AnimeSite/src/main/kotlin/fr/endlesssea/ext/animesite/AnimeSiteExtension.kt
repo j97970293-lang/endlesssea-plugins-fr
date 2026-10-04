@@ -33,7 +33,7 @@ class AnimeSiteExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://animesite.fr"
     override val providerName = "AnimeSite"
     override val extensionId = "fr.endlesssea.ext.animesite"
-    override val versionCode = 6
+    override val versionCode = 7
     override val descriptionText = "Animes VF/VOSTFR, lecteurs SibNet en MP4 direct."
     override val supportedTypes = setOf(MediaType.ANIME, MediaType.MOVIE)
 
@@ -148,7 +148,7 @@ class AnimeSiteExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     // Fiche
     // -----------------------------------------------------------------------
 
-    override suspend fun load(url: String): MediaDetails {
+    override suspend fun details(url: String): MediaDetails {
         val idAndSlug = url.trimEnd('/').substringAfterLast('/')
         val html = http.get("$mainUrl/$idAndSlug", headers()).requireOk().text
         val flight = rscFlight(html)

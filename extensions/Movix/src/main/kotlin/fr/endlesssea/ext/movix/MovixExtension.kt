@@ -36,7 +36,7 @@ class MovixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     private val api get() = "https://api." + mainUrl.removePrefix("https://").removePrefix("http://").trimEnd('/')
     override val providerName = "Movix"
     override val extensionId = "fr.endlesssea.ext.movix"
-    override val versionCode = 10
+    override val versionCode = 11
     override val descriptionText = "Catalogue TMDB en français, lecteurs du réseau Movix et agrégateurs FR."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 
@@ -72,7 +72,7 @@ class MovixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override suspend fun searchQuery(query: String, page: Int): List<SearchItem> =
         Tmdb.searchMulti(http, query, "movix", page)
 
-    override suspend fun load(url: String): MediaDetails {
+    override suspend fun details(url: String): MediaDetails {
         val parts = url.substringAfter("movix:", "").split(":").filter { it.isNotBlank() }
         val isTv = parts.getOrNull(0) == "tv"
         val tmdb = parts.getOrNull(1) ?: throw SourceException.VideoUnavailable("fiche invalide")
