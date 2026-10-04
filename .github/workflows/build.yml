@@ -38,7 +38,7 @@ jobs:
         run: ./gradlew --no-daemon packageAll
 
       - name: Régénérer l'index du dépôt
-        run: python3 tools/build-index.py
+        run: python3 tools/build-index.py --esx-dir build/esx
 
       - name: Vérifier que repo/index.json est à jour
         run: |
