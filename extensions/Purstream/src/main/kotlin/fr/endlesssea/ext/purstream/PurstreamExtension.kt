@@ -32,12 +32,12 @@ import fr.endlesssea.common.urlEncode
  */
 class PurstreamExtension(ctx: ExtensionContext) : EsProvider(ctx) {
 
-    override val mainUrl = "https://purstream.ad"
+    override val defaultUrl = "https://purstream.ad"
     private val apiUrl = "https://api.purstream.ad/api/v1/"
 
     override val providerName = "Purstream"
     override val extensionId = "fr.endlesssea.ext.purstream"
-    override val versionCode = 6
+    override val versionCode = 7
     override val descriptionText = "Films et séries VF/VOSTFR en HLS direct (API officielle du site)."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 

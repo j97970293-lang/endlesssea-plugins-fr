@@ -26,6 +26,22 @@ conversion.
 Les fichiers `.esx` peuvent aussi être téléchargés un par un depuis l'onglet
 **Releases** et installés manuellement.
 
+## Réglages par source (Endless Sea 0.4.0+)
+
+Depuis la version 0.4.0 de l'application, les réglages déclarés par une extension
+sont éditables dans **Paramètres → Extensions — réglages par source**, puis injectés
+dans `ExtensionContext.settings`.
+
+Les 17 extensions exposent désormais :
+
+| Réglage | Sources | Effet |
+|---|---|---|
+| `site_url` | 16 sources (toutes sauf Télé FR Direct) | Impose l'adresse du site. Prioritaire sur le domaine par défaut **et** sur la résolution automatique (Xalaflix, Frembed). Accepte `exemple.com` comme `https://exemple.com/`. Vide = valeur d'usine. |
+| `playlist_url`, `franco_playlist` | Télé FR Direct | Playlists M3U à charger (ex. `…/countries/mg.m3u`). |
+
+Concrètement : quand une source change de domaine, **plus besoin d'attendre une mise
+à jour** — colle la nouvelle adresse dans le réglage.
+
 ## Extensions disponibles (17)
 
 | Extension | Contenus | Particularités du site |

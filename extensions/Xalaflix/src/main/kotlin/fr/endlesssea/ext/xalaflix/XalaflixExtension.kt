@@ -39,13 +39,13 @@ import fr.endlesssea.common.VidSrcBuzz
  */
 class XalaflixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
 
-    private val defaultUrl = "https://xalaflix.tax"
+    override val defaultUrl = "https://xalaflix.tax"
     private val registryUrl = "https://xalaflix.online/"
 
-    override val mainUrl get() = resolved ?: defaultUrl
+    override val mainUrl get() = userUrl ?: resolved ?: defaultUrl
     override val providerName = "Xalaflix"
     override val extensionId = "fr.endlesssea.ext.xalaflix"
-    override val versionCode = 15
+    override val versionCode = 16
     override val descriptionText = "Films et séries VF/VOSTFR, serveurs du site et agrégateurs FR."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 
@@ -53,6 +53,7 @@ class XalaflixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
 
     /** ⚙ adresse courante : annonce officielle → défaut, validée sur l'accueil. */
     private suspend fun ensureDomain(): String {
+        userUrl?.let { return it }          // adresse imposée par l'utilisateur
         resolved?.let { return it }
         val candidates = ArrayList<String>()
         http.getOrNull(registryUrl)?.text?.let { page ->

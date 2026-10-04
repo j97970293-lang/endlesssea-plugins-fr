@@ -32,10 +32,10 @@ import fr.endlesssea.common.Text
  */
 class FlemmixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
 
-    override val mainUrl = "https://flemmix.cloud"
+    override val defaultUrl = "https://flemmix.cloud"
     override val providerName = "Flemmix"
     override val extensionId = "fr.endlesssea.ext.flemmix"
-    override val versionCode = 11
+    override val versionCode = 12
     override val descriptionText = "Films et séries VF/VOSTFR en streaming."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES, MediaType.ANIME)
 

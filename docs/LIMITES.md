@@ -1,7 +1,7 @@
 # Limites connues du projet
 
 Document d'honnêteté technique : ce que ce dépôt **ne** garantit **pas**, et pourquoi.
-État au 4 octobre 2026 — 17 extensions, API Endless Sea `apiVersion 1`.
+État au 4 octobre 2026 — 17 extensions, v1.1.0, API Endless Sea `apiVersion 1` (app 0.4.0).
 
 ---
 
@@ -26,9 +26,11 @@ Cas les plus fragiles ici :
 
 ### 1.2 Domaines miroirs
 Plusieurs sources tournent sur des domaines qui changent (saisies, blocages FAI).
-Seules **2 extensions sur 17** exposent un réglage `site_url` modifiable par
-l'utilisateur ; pour les autres, un changement de domaine impose une mise à jour du
-code. C'est le premier axe d'amélioration à envisager.
+**Depuis la v1.1.0, les 16 sources concernées exposent un réglage `site_url`** que
+l'utilisateur peut corriger lui-même sans attendre une mise à jour (nécessite
+l'application en 0.4.0 ou plus). Reste une limite : il faut *connaître* la nouvelle
+adresse, et un changement de domaine s'accompagne souvent d'un changement de
+structure HTML, que le réglage ne corrige pas.
 
 ### 1.3 Protections anti-bot
 Il n'y a **pas de contournement de Cloudflare**. Le `CloudflareKiller` de CloudStream

@@ -4,7 +4,6 @@ import dev.endlesssea.extensions.api.ExtensionContext
 import dev.endlesssea.extensions.api.error.SourceException
 import dev.endlesssea.extensions.api.model.AudioLang
 import dev.endlesssea.extensions.api.model.Episode
-import dev.endlesssea.extensions.api.model.ExtensionSetting
 import dev.endlesssea.extensions.api.model.MediaDetails
 import dev.endlesssea.extensions.api.model.MediaStatus
 import dev.endlesssea.extensions.api.model.MediaType
@@ -44,10 +43,10 @@ import java.net.URLDecoder
  */
 class AnimeSamaExtension(ctx: ExtensionContext) : EsProvider(ctx) {
 
-    override val mainUrl = "https://anime-sama.to"
+    override val defaultUrl = "https://anime-sama.to"
     override val providerName = "Anime-Sama"
     override val extensionId = "fr.endlesssea.ext.animesama"
-    override val versionCode = 6
+    override val versionCode = 7
     override val descriptionText =
         "Animes VF & VOSTFR : catalogue complet, saisons, films et OAV, miroirs multiples."
     override val supportedTypes = setOf(MediaType.ANIME, MediaType.MOVIE, MediaType.OVA)
@@ -62,15 +61,9 @@ class AnimeSamaExtension(ctx: ExtensionContext) : EsProvider(ctx) {
 
     override fun extractors() = Extractors.all(http) + AnsEmbed(http)
 
-    override suspend fun settings(): List<ExtensionSetting> = listOf(
-        ExtensionSetting(
-            key = "site_url",
-            title = "Adresse d'Anime-Sama",
-            summary = "Le site change régulièrement de domaine (.to, .fr, .com…).",
-            type = ExtensionSetting.Type.TEXT,
-            defaultValue = mainUrl,
-        )
-    )
+    override val siteUrlTitle = "Adresse d'Anime-Sama"
+    override val siteUrlSummary =
+        "Le site change régulièrement de domaine (.to, .fr, .com…). Laissez vide pour le défaut."
 
     private val baseHeaders = mapOf("Accept-Language" to "fr-FR,fr;q=0.9")
 

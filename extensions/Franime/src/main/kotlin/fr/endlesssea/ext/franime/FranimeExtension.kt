@@ -38,10 +38,10 @@ import java.util.Base64
  */
 class FranimeExtension(ctx: ExtensionContext) : EsProvider(ctx) {
 
-    override val mainUrl = "https://franime.fr"
+    override val defaultUrl = "https://franime.fr"
     override val providerName = "FRAnime"
     override val extensionId = "fr.endlesssea.ext.franime"
-    override val versionCode = 13
+    override val versionCode = 14
     override val descriptionText = "Animes VF et VOSTFR, catalogue FRAnime et métadonnées Kitsu."
     override val supportedTypes = setOf(MediaType.ANIME, MediaType.MOVIE)
 

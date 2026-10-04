@@ -13,7 +13,17 @@ class ExtensionContext(
     val filesDir: File,
     /** App locale (e.g. "fr") so extensions may localize content. */
     val locale: String,
-)
+) {
+    /**
+     * Valeurs utilisateur des réglages déclarés via [EsExtension.settings].
+     * Propriété hors constructeur → compatibilité binaire avec les extensions
+     * déjà compilées (apiVersion 1). L'app la réécrit à chaque instanciation.
+     */
+    var settings: Map<String, String> = emptyMap()
+
+    /** Raccourci : valeur d'un réglage (ou [fallback] si non défini). */
+    fun setting(key: String, fallback: String = ""): String = settings[key] ?: fallback
+}
 
 data class EsRequest(
     val url: String,

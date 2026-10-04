@@ -8,6 +8,7 @@ import dev.endlesssea.extensions.api.model.API_VERSION
 import dev.endlesssea.extensions.api.model.AudioLang
 import dev.endlesssea.extensions.api.model.Episode
 import dev.endlesssea.extensions.api.model.ExtensionInfo
+import dev.endlesssea.extensions.api.model.ExtensionSetting
 import dev.endlesssea.extensions.api.model.FilterSet
 import dev.endlesssea.extensions.api.model.LinkRequest
 import dev.endlesssea.extensions.api.model.MainPageRequest
@@ -49,7 +50,19 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
 
     protected val http: Http by lazy { Http(ctx) }
 
-    abstract val mainUrl: String
+    /**
+     * Domaine « usine » de la source, utilisé tant que l'utilisateur n'a pas
+     * saisi d'adresse personnalisée dans les réglages de l'extension.
+     */
+    abstract val defaultUrl: String
+
+    /**
+     * Adresse réellement utilisée : le réglage `site_url` (Endless Sea 0.4.0+)
+     * s'il est valide, sinon [defaultUrl]. Les providers à résolution
+     * automatique de domaine peuvent surcharger en gardant [userUrl] prioritaire.
+     */
+    open val mainUrl: String get() = userUrl ?: defaultUrl
+
     abstract val providerName: String
 
     /** Rangées proposées sur l'accueil ; la première sert de valeur par défaut. */
@@ -83,6 +96,63 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
     }
 
     override fun extractors(): List<ExtractorApi> = Extractors.all(http)
+
+    // -----------------------------------------------------------------------
+    // Réglages utilisateur (Endless Sea 0.4.0 : injectés dans ctx.settings)
+    // -----------------------------------------------------------------------
+
+    /** Valeur brute d'un réglage déclaré par [settings]. */
+    protected fun setting(key: String, fallback: String = ""): String =
+        ctx.settings[key]?.trim()?.takeIf { it.isNotEmpty() } ?: fallback
+
+    /** Réglage booléen (`true`/`1`/`oui`/`on`). */
+    protected fun settingFlag(key: String, fallback: Boolean = false): Boolean =
+        when (setting(key).lowercase()) {
+            "true", "1", "oui", "yes", "on" -> true
+            "false", "0", "non", "no", "off" -> false
+            else -> fallback
+        }
+
+    /** Clé du réglage d'adresse ; `null` désactive l'entrée « domaine ». */
+    protected open val siteUrlKey: String? = "site_url"
+    protected open val siteUrlTitle: String get() = "Adresse de $providerName"
+    protected open val siteUrlSummary: String? get() =
+        "Le site change régulièrement de domaine. Laissez vide pour utiliser " +
+            "l'adresse par défaut ($defaultUrl)."
+
+    /** Adresse saisie par l'utilisateur, normalisée, ou `null` si absente/invalide. */
+    protected val userUrl: String?
+        get() {
+            val key = siteUrlKey ?: return null
+            return normalizeSiteUrl(ctx.settings[key])
+        }
+
+    /** Réglages propres à la source, ajoutés après l'entrée « domaine ». */
+    protected open val extraSettings: List<ExtensionSetting> get() = emptyList()
+
+    override suspend fun settings(): List<ExtensionSetting> {
+        val key = siteUrlKey ?: return extraSettings
+        return listOf(
+            ExtensionSetting(
+                key = key,
+                title = siteUrlTitle,
+                summary = siteUrlSummary,
+                type = ExtensionSetting.Type.TEXT,
+                defaultValue = defaultUrl,
+            )
+        ) + extraSettings
+    }
+
+    /** `exemple.com`, ` https://exemple.com/ ` → `https://exemple.com`. */
+    protected fun normalizeSiteUrl(raw: String?): String? {
+        val v = raw?.trim()?.trimEnd('/').orEmpty()
+        if (v.isEmpty()) return null
+        val withScheme = if (v.startsWith("http://") || v.startsWith("https://")) v else "https://$v"
+        val host = Text.host(withScheme)
+        if (!host.contains('.') || host.contains(' ')) return null
+        return withScheme
+    }
+
 
     // -----------------------------------------------------------------------
     // Fabriques de DTO

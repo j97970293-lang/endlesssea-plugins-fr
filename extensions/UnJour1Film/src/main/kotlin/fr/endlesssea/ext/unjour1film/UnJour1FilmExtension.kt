@@ -36,10 +36,10 @@ import java.util.Base64
  */
 class UnJour1FilmExtension(ctx: ExtensionContext) : EsProvider(ctx) {
 
-    override val mainUrl = "https://1jour1film0826b.website"
+    override val defaultUrl = "https://1jour1film0826b.website"
     override val providerName = "1Jour1Film"
     override val extensionId = "fr.endlesssea.ext.unjour1film"
-    override val versionCode = 12
+    override val versionCode = 13
     override val descriptionText = "Films et séries VF en streaming."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 

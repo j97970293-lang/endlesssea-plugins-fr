@@ -31,10 +31,10 @@ class FrembedExtension(ctx: ExtensionContext) : EsProvider(ctx) {
 
     private val fallbackDomains = listOf("https://frembed.surf", "https://frembed.skin")
 
-    override val mainUrl = "https://frembed.surf"
+    override val defaultUrl = "https://frembed.surf"
     override val providerName = "Frembed"
     override val extensionId = "fr.endlesssea.ext.frembed"
-    override val versionCode = 10
+    override val versionCode = 11
     override val descriptionText = "Réseau de lecteurs FR indexé par TMDB (Voe, Dood, Uqload…)."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 
@@ -43,6 +43,7 @@ class FrembedExtension(ctx: ExtensionContext) : EsProvider(ctx) {
 
     /** Premier domaine du réseau qui répond — les miroirs tournent souvent. */
     private suspend fun origin(): String {
+        userUrl?.let { return it }          // adresse imposée par l'utilisateur
         resolvedDomain?.let { return it }
         for (candidate in fallbackDomains) {
             val ok = http.getOrNull("$candidate/", referer = "$candidate/")?.isSuccessful == true

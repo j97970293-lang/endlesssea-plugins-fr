@@ -32,11 +32,11 @@ import fr.endlesssea.common.VidSrcBuzz
  */
 class MovixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
 
-    override val mainUrl = "https://movix.men"
+    override val defaultUrl = "https://movix.men"
     private val api get() = "https://api." + mainUrl.removePrefix("https://").removePrefix("http://").trimEnd('/')
     override val providerName = "Movix"
     override val extensionId = "fr.endlesssea.ext.movix"
-    override val versionCode = 9
+    override val versionCode = 10
     override val descriptionText = "Catalogue TMDB en français, lecteurs du réseau Movix et agrégateurs FR."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 

@@ -24,10 +24,10 @@ import fr.endlesssea.common.urlEncode
  */
 class VostfreeExtension(ctx: ExtensionContext) : EsProvider(ctx) {
 
-    override val mainUrl = "https://vostfree.ws"
+    override val defaultUrl = "https://vostfree.ws"
     override val providerName = "Vostfree"
     override val extensionId = "fr.endlesssea.ext.vostfree"
-    override val versionCode = 4
+    override val versionCode = 5
     override val descriptionText = "Animes VF & VOSTFR et films (Sibnet, Uqload, VidMoly, Myvi…)."
     override val supportedTypes = setOf(MediaType.ANIME, MediaType.MOVIE)
 

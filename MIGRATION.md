@@ -34,7 +34,7 @@ convertis en extensions Endless Sea.
 | `JsUnpacker` | `Unpacker.unpack` |
 | `ErrorLoadingException` | `SourceException.VideoUnavailable` / `.CaptchaRequired` |
 | `CloudflareKiller` | `Res.verifyNotBlocked()` → `SourceException.CaptchaRequired` (l'app ouvre une WebView) |
-| `AlertDialog` de réglages | `ExtensionSetting` (champ TEXT `site_url`) |
+| `AlertDialog` de réglages | `ExtensionSetting` (champ TEXT `site_url`), valeurs lues via `ExtensionContext.settings` (app 0.4.0+) |
 
 ## Ce qui a été supprimé
 

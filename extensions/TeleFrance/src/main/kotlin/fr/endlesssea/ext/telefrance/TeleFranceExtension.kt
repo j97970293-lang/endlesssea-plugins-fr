@@ -27,10 +27,10 @@ import fr.endlesssea.common.ServerEntry
  */
 class TeleFranceExtension(ctx: ExtensionContext) : EsProvider(ctx) {
 
-    override val mainUrl = "https://iptv-org.github.io"
+    override val defaultUrl = "https://iptv-org.github.io"
     override val providerName = "Télé FR Direct"
     override val extensionId = "fr.endlesssea.ext.telefrance"
-    override val versionCode = 3
+    override val versionCode = 4
     override val descriptionText =
         "Chaînes françaises, francophones et malgaches en direct (playlists IPTV publiques)."
     override val supportedTypes = setOf(MediaType.OTHER)
@@ -38,7 +38,10 @@ class TeleFranceExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     private val defaultPlaylist = "https://iptv-org.github.io/iptv/countries/fr.m3u"
     private val francoPlaylist = "https://iptv-org.github.io/iptv/languages/fra.m3u"
 
-    override suspend fun settings(): List<ExtensionSetting> = listOf(
+    /** Pas de « domaine » ici : la source est une playlist publique. */
+    override val siteUrlKey: String? = null
+
+    override val extraSettings = listOf(
         ExtensionSetting(
             key = "playlist_url",
             title = "Liste de chaînes (M3U)",
@@ -46,8 +49,19 @@ class TeleFranceExtension(ctx: ExtensionContext) : EsProvider(ctx) {
                 "https://iptv-org.github.io/iptv/countries/mg.m3u",
             type = ExtensionSetting.Type.TEXT,
             defaultValue = defaultPlaylist,
-        )
+        ),
+        ExtensionSetting(
+            key = "franco_playlist",
+            title = "Liste francophonie (M3U)",
+            summary = "Deuxième playlist fusionnée avec la première.",
+            type = ExtensionSetting.Type.TEXT,
+            defaultValue = francoPlaylist,
+        ),
     )
+
+    /** Playlists effectives : réglage utilisateur si renseigné, sinon défaut. */
+    private val playlistUrl: String get() = setting("playlist_url", defaultPlaylist)
+    private val francoUrl: String get() = setting("franco_playlist", francoPlaylist)
 
     override val homeRows = listOf(
         HomeRow("madagascar", "🇲🇬 Madagascar"),
@@ -87,10 +101,10 @@ class TeleFranceExtension(ctx: ExtensionContext) : EsProvider(ctx) {
         cache?.let { (ts, list) ->
             if (list.isNotEmpty() && System.currentTimeMillis() - ts < 600_000L) return list
         }
-        val text = http.getOrNull(defaultPlaylist)?.text
+        val text = http.getOrNull(playlistUrl)?.text
             ?: throw SourceException.SourceUnavailable(null)
         val out = parsePlaylist(text).toMutableList()
-        http.getOrNull(francoPlaylist)?.text?.let { fra ->
+        http.getOrNull(francoUrl)?.text?.let { fra ->
             val known = out.map { it.name.lowercase() }.toSet()
             out += parsePlaylist(fra, forcedSection = "franco", exclude = known)
         }
