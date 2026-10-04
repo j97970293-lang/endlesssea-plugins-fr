@@ -23,6 +23,7 @@ import argparse
 import hashlib
 import json
 import pathlib
+import re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 REPO_URL = "https://github.com/j97970293-lang/endlesssea-plugins-fr"
@@ -44,6 +45,12 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--esx-dir", default="build/esx")
     ap.add_argument("--base-url", default=DEFAULT_BASE)
+    ap.add_argument(
+        "--allow-missing",
+        action="store_true",
+        help="tolère un .esx absent (empreinte reprise de l'index existant) ; "
+        "interdit en CI : une empreinte périmée rend le dépôt ininstallable",
+    )
     args = ap.parse_args()
 
     esx_dir = (ROOT / args.esx_dir) if not pathlib.Path(args.esx_dir).is_absolute() else pathlib.Path(args.esx_dir)
@@ -65,8 +72,7 @@ def main() -> int:
             prev = old.get(meta["id"], {})
             sha256 = prev.get("sha256", "")
             size = prev.get("size", 0)
-            if not sha256:
-                missing.append(file_name)
+            missing.append(file_name)
 
         extensions.append(
             {
@@ -100,8 +106,27 @@ def main() -> int:
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(index, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"→ {OUT.relative_to(ROOT)} ({len(extensions)} extensions)")
+    # Vérifie que le code Kotlin et le manifeste annoncent la même version.
+    drift = []
+    for kt in ROOT.glob("extensions/*/src/main/kotlin/fr/endlesssea/ext/*/*Extension.kt"):
+        m = re.search(r"override val versionCode = (\d+)", kt.read_text(encoding="utf-8"))
+        mj = kt.parents[5] / "assets" / "extension.json"
+        if m and mj.is_file():
+            declared = json.loads(mj.read_text(encoding="utf-8"))["version"]
+            if int(m.group(1)) != declared:
+                drift.append(f"{kt.parents[6].name}: Kotlin {m.group(1)} != manifeste {declared}")
+    if drift:
+        print("✗ versions incohérentes :\n  " + "\n  ".join(drift))
+        return 1
+
     if missing:
-        print("⚠ .esx introuvables, empreinte vide : " + ", ".join(missing))
+        msg = ".esx introuvables dans " + str(esx_dir) + " : " + ", ".join(missing)
+        if args.allow_missing:
+            print("⚠ " + msg + " (empreintes reprises de l'index précédent — NE PAS PUBLIER)")
+            return 0
+        print("✗ " + msg)
+        print("  Les empreintes seraient périmées et l'app refuserait les extensions.")
+        print("  Lancez ./gradlew packageAll, ou --allow-missing en connaissance de cause.")
         return 1
     return 0
 

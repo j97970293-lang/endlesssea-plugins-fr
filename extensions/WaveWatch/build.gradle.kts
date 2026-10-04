@@ -1,3 +1,9 @@
+// Version unique de vérité : src/main/assets/extension.json (évite toute dérive
+// entre le manifeste embarqué, le nom du .esx et repo/index.json).
+val esManifestText = file("src/main/assets/extension.json").readText()
+fun esManifest(key: String): String =
+    Regex("\"" + key + "\"\\s*:\\s*\"?([^\",}]+)\"?").find(esManifestText)!!.groupValues[1].trim()
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -11,8 +17,8 @@ android {
         applicationId = "fr.endlesssea.ext.wavewatch"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 16
-        versionName = "1.0.0"
+        versionCode = esManifest("version").toInt()
+        versionName = esManifest("versionName")
     }
 
     buildTypes {
