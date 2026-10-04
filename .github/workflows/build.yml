@@ -23,8 +23,13 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Configurer le SDK Android
-        uses: android-actions/setup-android@v3
+      # Le runner ubuntu-latest embarque déjà le SDK Android : on l'utilise tel
+      # quel (l'action setup-android échoue sur l'acceptation des licences).
+      - name: Préparer le SDK Android
+        run: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null 2>&1 || true
+          echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
 
       - name: Configurer Gradle
         uses: gradle/actions/setup-gradle@v4
