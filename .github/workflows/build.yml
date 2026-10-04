@@ -1,0 +1,76 @@
+name: Build & Release
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurer JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Configurer le SDK Android
+        uses: android-actions/setup-android@v3
+
+      - name: Configurer Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Compiler toutes les extensions (.esx)
+        run: ./gradlew --no-daemon packageAll
+
+      - name: Régénérer l'index du dépôt
+        run: python3 tools/build-index.py
+
+      - name: Vérifier que repo/index.json est à jour
+        run: |
+          if ! git diff --quiet -- repo/index.json; then
+            echo "::warning::repo/index.json n'était pas à jour, il a été régénéré."
+            git diff -- repo/index.json
+          fi
+
+      - name: Publier les artefacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: extensions-esx
+          path: |
+            build/esx/*.esx
+            repo/index.json
+          if-no-files-found: error
+
+      - name: Créer la release (sur tag)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/esx/*.esx
+            repo/index.json
+          generate_release_notes: true
+
+  pages:
+    # Publie repo/index.json sur GitHub Pages pour que l'app puisse s'y abonner
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: extensions-esx
+          path: site
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site

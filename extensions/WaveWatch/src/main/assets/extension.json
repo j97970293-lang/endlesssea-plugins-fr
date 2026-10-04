@@ -1,0 +1,39 @@
+{
+  "id": "fr.endlesssea.ext.wavewatch",
+  "name": "WaveWatch",
+  "version": 16,
+  "versionName": "1.0.0",
+  "apiVersion": 1,
+  "description": {
+    "fr": "WaveWatch — films, séries, animes et chaînes TV en direct (catalogue TMDB + agrégateurs FR)"
+  },
+  "author": {
+    "name": "j97970293-lang",
+    "url": "https://github.com/j97970293-lang/endlesssea-plugins-fr"
+  },
+  "languages": [
+    "fr"
+  ],
+  "types": [
+    "MOVIE",
+    "SERIES",
+    "ANIME",
+    "OTHER"
+  ],
+  "iconUrl": "https://www.google.com/s2/favicons?domain=wavewatch.top&sz=128",
+  "entryClass": "fr.endlesssea.ext.wavewatch.WaveWatchExtension",
+  "permissions": [
+    "INTERNET",
+    "DOWNLOAD",
+    "WEBVIEW"
+  ],
+  "capabilities": {
+    "search": true,
+    "servers": true,
+    "subtitles": true,
+    "downloads": true,
+    "auth": false
+  },
+  "sourceUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr",
+  "nsfw": false
+}

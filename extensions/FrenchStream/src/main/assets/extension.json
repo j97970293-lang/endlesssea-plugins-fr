@@ -1,0 +1,37 @@
+{
+  "id": "fr.endlesssea.ext.frenchstream",
+  "name": "French Stream",
+  "version": 6,
+  "versionName": "1.0.0",
+  "apiVersion": 1,
+  "description": {
+    "fr": "French Stream — films & séries VF/VOSTFR (Uqload, Vidzy, FileMoon, Dood, Voe…)"
+  },
+  "author": {
+    "name": "j97970293-lang",
+    "url": "https://github.com/j97970293-lang/endlesssea-plugins-fr"
+  },
+  "languages": [
+    "fr"
+  ],
+  "types": [
+    "MOVIE",
+    "SERIES"
+  ],
+  "iconUrl": "https://www.google.com/s2/favicons?domain=fs27.lol&sz=128",
+  "entryClass": "fr.endlesssea.ext.frenchstream.FrenchStreamExtension",
+  "permissions": [
+    "INTERNET",
+    "DOWNLOAD",
+    "WEBVIEW"
+  ],
+  "capabilities": {
+    "search": true,
+    "servers": true,
+    "subtitles": true,
+    "downloads": true,
+    "auth": false
+  },
+  "sourceUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr",
+  "nsfw": false
+}

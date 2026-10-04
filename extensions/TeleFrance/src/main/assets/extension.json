@@ -1,0 +1,36 @@
+{
+  "id": "fr.endlesssea.ext.telefrance",
+  "name": "Télé FR Direct",
+  "version": 3,
+  "versionName": "1.0.0",
+  "apiVersion": 1,
+  "description": {
+    "fr": "Chaînes de télévision françaises, francophones et malgaches en direct (playlists IPTV publiques)"
+  },
+  "author": {
+    "name": "j97970293-lang",
+    "url": "https://github.com/j97970293-lang/endlesssea-plugins-fr"
+  },
+  "languages": [
+    "fr"
+  ],
+  "types": [
+    "OTHER"
+  ],
+  "iconUrl": "https://www.google.com/s2/favicons?domain=iptv-org.github.io&sz=128",
+  "entryClass": "fr.endlesssea.ext.telefrance.TeleFranceExtension",
+  "permissions": [
+    "INTERNET",
+    "DOWNLOAD",
+    "WEBVIEW"
+  ],
+  "capabilities": {
+    "search": true,
+    "servers": true,
+    "subtitles": true,
+    "downloads": true,
+    "auth": false
+  },
+  "sourceUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr",
+  "nsfw": false
+}

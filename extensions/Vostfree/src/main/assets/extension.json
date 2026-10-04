@@ -1,0 +1,37 @@
+{
+  "id": "fr.endlesssea.ext.vostfree",
+  "name": "Vostfree",
+  "version": 4,
+  "versionName": "1.0.0",
+  "apiVersion": 1,
+  "description": {
+    "fr": "Vostfree — animes VF & VOSTFR et films (Sibnet, Uqload, VidMoly, Myvi…)"
+  },
+  "author": {
+    "name": "j97970293-lang",
+    "url": "https://github.com/j97970293-lang/endlesssea-plugins-fr"
+  },
+  "languages": [
+    "fr"
+  ],
+  "types": [
+    "ANIME",
+    "MOVIE"
+  ],
+  "iconUrl": "https://www.google.com/s2/favicons?domain=vostfree.ws&sz=128",
+  "entryClass": "fr.endlesssea.ext.vostfree.VostfreeExtension",
+  "permissions": [
+    "INTERNET",
+    "DOWNLOAD",
+    "WEBVIEW"
+  ],
+  "capabilities": {
+    "search": true,
+    "servers": true,
+    "subtitles": true,
+    "downloads": true,
+    "auth": false
+  },
+  "sourceUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr",
+  "nsfw": false
+}

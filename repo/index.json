@@ -1,0 +1,675 @@
+{
+  "name": "Endless Sea · Extensions FR",
+  "description": "Sources francophones (films, séries, animes, TV) pour Endless Sea.",
+  "language": "fr",
+  "apiVersion": 1,
+  "updatedAt": "2026-10-04T05:44:25Z",
+  "repositoryUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr",
+  "extensions": [
+    {
+      "id": "fr.endlesssea.ext.afterdark",
+      "name": "Afterdark",
+      "version": 17,
+      "versionName": "1.0.0",
+      "apiVersion": 1,
+      "description": {
+        "fr": "Afterdark — films et séries en VOSTFR, multi-serveurs (catalogue TMDB)"
+      },
+      "author": {
+        "name": "j97970293-lang",
+        "url": "https://github.com/j97970293-lang/endlesssea-plugins-fr"
+      },
+      "languages": [
+        "fr"
+      ],
+      "types": [
+        "MOVIE",
+        "SERIES"
+      ],
+      "iconUrl": "https://www.google.com/s2/favicons?domain=afd926.mom&sz=128",
+      "entryClass": "fr.endlesssea.ext.afterdark.AfterdarkExtension",
+      "permissions": [
+        "INTERNET",
+        "DOWNLOAD",
+        "WEBVIEW"
+      ],
+      "capabilities": {
+        "search": true,
+        "servers": true,
+        "subtitles": true,
+        "downloads": true,
+        "auth": false
+      },
+      "nsfw": false,
+      "sourceUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr",
+      "downloadUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Afterdark-1.0.0.esx",
+      "fileName": "Afterdark-1.0.0.esx"
+    },
+    {
+      "id": "fr.endlesssea.ext.animesama",
+      "name": "Anime-Sama",
+      "version": 6,
+      "versionName": "1.0.0",
+      "apiVersion": 1,
+      "description": {
+        "fr": "Anime-Sama — animes VF & VOSTFR (catalogue complet, saisons, films, miroirs multiples)"
+      },
+      "author": {
+        "name": "j97970293-lang",
+        "url": "https://github.com/j97970293-lang/endlesssea-plugins-fr"
+      },
+      "languages": [
+        "fr"
+      ],
+      "types": [
+        "ANIME",
+        "MOVIE",
+        "OVA"
+      ],
+      "iconUrl": "https://www.google.com/s2/favicons?domain=anime-sama.to&sz=128",
+      "entryClass": "fr.endlesssea.ext.animesama.AnimeSamaExtension",
+      "permissions": [
+        "INTERNET",
+        "DOWNLOAD",
+        "WEBVIEW"
+      ],
+      "capabilities": {
+        "search": true,
+        "servers": true,
+        "subtitles": true,
+        "downloads": true,
+        "auth": false
+      },
+      "nsfw": false,
+      "sourceUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr",
+      "downloadUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/AnimeSama-1.0.0.esx",
+      "fileName": "AnimeSama-1.0.0.esx"
+    },
+    {
+      "id": "fr.endlesssea.ext.animesite",
+      "name": "AnimeSite",
+      "version": 5,
+      "versionName": "1.0.0",
+      "apiVersion": 1,
+      "description": {
+        "fr": "AnimeSite — animes VF/VOSTFR, lecteurs SibNet MP4 directs (tendances, nouveautés, mieux notés)"
+      },
+      "author": {
+        "name": "j97970293-lang",
+        "url": "https://github.com/j97970293-lang/endlesssea-plugins-fr"
+      },
+      "languages": [
+        "fr"
+      ],
+      "types": [
+        "ANIME",
+        "MOVIE"
+      ],
+      "iconUrl": "https://www.google.com/s2/favicons?domain=animesite.fr&sz=128",
+      "entryClass": "fr.endlesssea.ext.animesite.AnimeSiteExtension",
+      "permissions": [
+        "INTERNET",
+        "DOWNLOAD",
+        "WEBVIEW"
+      ],
+      "capabilities": {
+        "search": true,
+        "servers": true,
+        "subtitles": true,
+        "downloads": true,
+        "auth": false
+      },
+      "nsfw": false,
+      "sourceUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr",
+      "downloadUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/AnimeSite-1.0.0.esx",
+      "fileName": "AnimeSite-1.0.0.esx"
+    },
+    {
+      "id": "fr.endlesssea.ext.animoflix",
+      "name": "AnimoFlix",
+      "version": 14,
+      "versionName": "1.0.0",
+      "apiVersion": 1,
+      "description": {
+        "fr": "AnimoFlix — animes VF et VOSTFR en streaming (animoflix.to)"
+      },
+      "author": {
+        "name": "j97970293-lang",
+        "url": "https://github.com/j97970293-lang/endlesssea-plugins-fr"
+      },
+      "languages": [
+        "fr"
+      ],
+      "types": [
+        "ANIME",
+        "MOVIE"
+      ],
+      "iconUrl": "https://www.google.com/s2/favicons?domain=animoflix.to&sz=128",
+      "entryClass": "fr.endlesssea.ext.animoflix.AnimoFlixExtension",
+      "permissions": [
+        "INTERNET",
+        "DOWNLOAD",
+        "WEBVIEW"
+      ],
+      "capabilities": {
+        "search": true,
+        "servers": true,
+        "subtitles": true,
+        "downloads": true,
+        "auth": false
+      },
+      "nsfw": false,
+      "sourceUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr",
+      "downloadUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/AnimoFlix-1.0.0.esx",
+      "fileName": "AnimoFlix-1.0.0.esx"
+    },
+    {
+      "id": "fr.endlesssea.ext.cinestream",
+      "name": "CineStream",
+      "version": 5,
+      "versionName": "1.0.0",
+      "apiVersion": 1,
+      "description": {
+        "fr": "CineStream — films VF/VOSTFR, une quinzaine de lecteurs par titre (Vidara, Voe, Uqload, VidMoly, StreamWish…)"
+      },
+      "author": {
+        "name": "j97970293-lang",
+        "url": "https://github.com/j97970293-lang/endlesssea-plugins-fr"
+      },
+      "languages": [
+        "fr"
+      ],
+      "types": [
+        "MOVIE"
+      ],
+      "iconUrl": "https://www.google.com/s2/favicons?domain=cinestream.info&sz=128",
+      "entryClass": "fr.endlesssea.ext.cinestream.CineStreamExtension",
+      "permissions": [
+        "INTERNET",
+        "DOWNLOAD",
+        "WEBVIEW"
+      ],
+      "capabilities": {
+        "search": true,
+        "servers": true,
+        "subtitles": true,
+        "downloads": true,
+        "auth": false
+      },
+      "nsfw": false,
+      "sourceUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr",
+      "downloadUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/CineStream-1.0.0.esx",
+      "fileName": "CineStream-1.0.0.esx"
+    },
+    {
+      "id": "fr.endlesssea.ext.flemmix",
+      "name": "Flemmix",
+      "version": 11,
+      "versionName": "1.0.0",
+      "apiVersion": 1,
+      "description": {
+        "fr": "Flemmix — films et séries VF/VOSTFR en streaming (flemmix.cloud)"
+      },
+      "author": {
+        "name": "j97970293-lang",
+        "url": "https://github.com/j97970293-lang/endlesssea-plugins-fr"
+      },
+      "languages": [
+        "fr"
+      ],
+      "types": [
+        "MOVIE",
+        "SERIES",
+        "ANIME"
+      ],
+      "iconUrl": "https://www.google.com/s2/favicons?domain=flemmix.cloud&sz=128",
+      "entryClass": "fr.endlesssea.ext.flemmix.FlemmixExtension",
+      "permissions": [
+        "INTERNET",
+        "DOWNLOAD",
+        "WEBVIEW"
+      ],
+      "capabilities": {
+        "search": true,
+        "servers": true,
+        "subtitles": true,
+        "downloads": true,
+        "auth": false
+      },
+      "nsfw": false,
+      "sourceUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr",
+      "downloadUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Flemmix-1.0.0.esx",
+      "fileName": "Flemmix-1.0.0.esx"
+    },
+    {
+      "id": "fr.endlesssea.ext.franime",
+      "name": "FRAnime",
+      "version": 13,
+      "versionName": "1.0.0",
+      "apiVersion": 1,
+      "description": {
+        "fr": "FRAnime — animes VF et VOSTFR (catalogue FRAnime + métadonnées Kitsu)"
+      },
+      "author": {
+        "name": "j97970293-lang",
+        "url": "https://github.com/j97970293-lang/endlesssea-plugins-fr"
+      },
+      "languages": [
+        "fr"
+      ],
+      "types": [
+        "ANIME",
+        "MOVIE"
+      ],
+      "iconUrl": "https://www.google.com/s2/favicons?domain=franime.fr&sz=128",
+      "entryClass": "fr.endlesssea.ext.franime.FranimeExtension",
+      "permissions": [
+        "INTERNET",
+        "DOWNLOAD",
+        "WEBVIEW"
+      ],
+      "capabilities": {
+        "search": true,
+        "servers": true,
+        "subtitles": true,
+        "downloads": true,
+        "auth": false
+      },
+      "nsfw": false,
+      "sourceUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr",
+      "downloadUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Franime-1.0.0.esx",
+      "fileName": "Franime-1.0.0.esx"
+    },
+    {
+      "id": "fr.endlesssea.ext.frembed",
+      "name": "Frembed",
+      "version": 10,
+      "versionName": "1.0.0",
+      "apiVersion": 1,
+      "description": {
+        "fr": "Frembed — réseau de lecteurs FR (Voe, Dood, Uqload…) indexé par TMDB, catalogue TMDB en français"
+      },
+      "author": {
+        "name": "j97970293-lang",
+        "url": "https://github.com/j97970293-lang/endlesssea-plugins-fr"
+      },
+      "languages": [
+        "fr"
+      ],
+      "types": [
+        "MOVIE",
+        "SERIES"
+      ],
+      "iconUrl": "https://www.google.com/s2/favicons?domain=frembed.surf&sz=128",
+      "entryClass": "fr.endlesssea.ext.frembed.FrembedExtension",
+      "permissions": [
+        "INTERNET",
+        "DOWNLOAD",
+        "WEBVIEW"
+      ],
+      "capabilities": {
+        "search": true,
+        "servers": true,
+        "subtitles": true,
+        "downloads": true,
+        "auth": false
+      },
+      "nsfw": false,
+      "sourceUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr",
+      "downloadUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Frembed-1.0.0.esx",
+      "fileName": "Frembed-1.0.0.esx"
+    },
+    {
+      "id": "fr.endlesssea.ext.frenchstream",
+      "name": "French Stream",
+      "version": 6,
+      "versionName": "1.0.0",
+      "apiVersion": 1,
+      "description": {
+        "fr": "French Stream — films & séries VF/VOSTFR (Uqload, Vidzy, FileMoon, Dood, Voe…)"
+      },
+      "author": {
+        "name": "j97970293-lang",
+        "url": "https://github.com/j97970293-lang/endlesssea-plugins-fr"
+      },
+      "languages": [
+        "fr"
+      ],
+      "types": [
+        "MOVIE",
+        "SERIES"
+      ],
+      "iconUrl": "https://www.google.com/s2/favicons?domain=fs27.lol&sz=128",
+      "entryClass": "fr.endlesssea.ext.frenchstream.FrenchStreamExtension",
+      "permissions": [
+        "INTERNET",
+        "DOWNLOAD",
+        "WEBVIEW"
+      ],
+      "capabilities": {
+        "search": true,
+        "servers": true,
+        "subtitles": true,
+        "downloads": true,
+        "auth": false
+      },
+      "nsfw": false,
+      "sourceUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr",
+      "downloadUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/FrenchStream-1.0.0.esx",
+      "fileName": "FrenchStream-1.0.0.esx"
+    },
+    {
+      "id": "fr.endlesssea.ext.movix",
+      "name": "Movix",
+      "version": 9,
+      "versionName": "1.0.0",
+      "apiVersion": 1,
+      "description": {
+        "fr": "Movix — catalogue TMDB en français, lecteurs du réseau movix.men + agrégateurs (Purstream, Wiflix, FrenchStream, Frembed, VidSrc)"
+      },
+      "author": {
+        "name": "j97970293-lang",
+        "url": "https://github.com/j97970293-lang/endlesssea-plugins-fr"
+      },
+      "languages": [
+        "fr"
+      ],
+      "types": [
+        "MOVIE",
+        "SERIES"
+      ],
+      "iconUrl": "https://www.google.com/s2/favicons?domain=movix.men&sz=128",
+      "entryClass": "fr.endlesssea.ext.movix.MovixExtension",
+      "permissions": [
+        "INTERNET",
+        "DOWNLOAD",
+        "WEBVIEW"
+      ],
+      "capabilities": {
+        "search": true,
+        "servers": true,
+        "subtitles": true,
+        "downloads": true,
+        "auth": false
+      },
+      "nsfw": false,
+      "sourceUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr",
+      "downloadUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Movix-1.0.0.esx",
+      "fileName": "Movix-1.0.0.esx"
+    },
+    {
+      "id": "fr.endlesssea.ext.purstream",
+      "name": "Purstream",
+      "version": 6,
+      "versionName": "1.0.0",
+      "apiVersion": 1,
+      "description": {
+        "fr": "Purstream — films et séries VF/VOSTFR en HLS direct (API purstream.ad) + lecteurs TMDB"
+      },
+      "author": {
+        "name": "j97970293-lang",
+        "url": "https://github.com/j97970293-lang/endlesssea-plugins-fr"
+      },
+      "languages": [
+        "fr"
+      ],
+      "types": [
+        "MOVIE",
+        "SERIES"
+      ],
+      "iconUrl": "https://www.google.com/s2/favicons?domain=purstream.ad&sz=128",
+      "entryClass": "fr.endlesssea.ext.purstream.PurstreamExtension",
+      "permissions": [
+        "INTERNET",
+        "DOWNLOAD",
+        "WEBVIEW"
+      ],
+      "capabilities": {
+        "search": true,
+        "servers": true,
+        "subtitles": true,
+        "downloads": true,
+        "auth": false
+      },
+      "nsfw": false,
+      "sourceUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr",
+      "downloadUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Purstream-1.0.0.esx",
+      "fileName": "Purstream-1.0.0.esx"
+    },
+    {
+      "id": "fr.endlesssea.ext.telefrance",
+      "name": "Télé FR Direct",
+      "version": 3,
+      "versionName": "1.0.0",
+      "apiVersion": 1,
+      "description": {
+        "fr": "Chaînes de télévision françaises, francophones et malgaches en direct (playlists IPTV publiques)"
+      },
+      "author": {
+        "name": "j97970293-lang",
+        "url": "https://github.com/j97970293-lang/endlesssea-plugins-fr"
+      },
+      "languages": [
+        "fr"
+      ],
+      "types": [
+        "OTHER"
+      ],
+      "iconUrl": "https://www.google.com/s2/favicons?domain=iptv-org.github.io&sz=128",
+      "entryClass": "fr.endlesssea.ext.telefrance.TeleFranceExtension",
+      "permissions": [
+        "INTERNET",
+        "DOWNLOAD",
+        "WEBVIEW"
+      ],
+      "capabilities": {
+        "search": true,
+        "servers": true,
+        "subtitles": true,
+        "downloads": true,
+        "auth": false
+      },
+      "nsfw": false,
+      "sourceUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr",
+      "downloadUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/TeleFrance-1.0.0.esx",
+      "fileName": "TeleFrance-1.0.0.esx"
+    },
+    {
+      "id": "fr.endlesssea.ext.unjour1film",
+      "name": "1Jour1Film",
+      "version": 12,
+      "versionName": "1.0.0",
+      "apiVersion": 1,
+      "description": {
+        "fr": "1JOUR1FILM — films et séries VF en streaming (catalogue WordPress + lecteurs TMDB)"
+      },
+      "author": {
+        "name": "j97970293-lang",
+        "url": "https://github.com/j97970293-lang/endlesssea-plugins-fr"
+      },
+      "languages": [
+        "fr"
+      ],
+      "types": [
+        "MOVIE",
+        "SERIES"
+      ],
+      "iconUrl": "https://www.google.com/s2/favicons?domain=1jour1film0826b.website&sz=128",
+      "entryClass": "fr.endlesssea.ext.unjour1film.UnJour1FilmExtension",
+      "permissions": [
+        "INTERNET",
+        "DOWNLOAD",
+        "WEBVIEW"
+      ],
+      "capabilities": {
+        "search": true,
+        "servers": true,
+        "subtitles": true,
+        "downloads": true,
+        "auth": false
+      },
+      "nsfw": false,
+      "sourceUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr",
+      "downloadUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/UnJour1Film-1.0.0.esx",
+      "fileName": "UnJour1Film-1.0.0.esx"
+    },
+    {
+      "id": "fr.endlesssea.ext.vostfree",
+      "name": "Vostfree",
+      "version": 4,
+      "versionName": "1.0.0",
+      "apiVersion": 1,
+      "description": {
+        "fr": "Vostfree — animes VF & VOSTFR et films (Sibnet, Uqload, VidMoly, Myvi…)"
+      },
+      "author": {
+        "name": "j97970293-lang",
+        "url": "https://github.com/j97970293-lang/endlesssea-plugins-fr"
+      },
+      "languages": [
+        "fr"
+      ],
+      "types": [
+        "ANIME",
+        "MOVIE"
+      ],
+      "iconUrl": "https://www.google.com/s2/favicons?domain=vostfree.ws&sz=128",
+      "entryClass": "fr.endlesssea.ext.vostfree.VostfreeExtension",
+      "permissions": [
+        "INTERNET",
+        "DOWNLOAD",
+        "WEBVIEW"
+      ],
+      "capabilities": {
+        "search": true,
+        "servers": true,
+        "subtitles": true,
+        "downloads": true,
+        "auth": false
+      },
+      "nsfw": false,
+      "sourceUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr",
+      "downloadUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Vostfree-1.0.0.esx",
+      "fileName": "Vostfree-1.0.0.esx"
+    },
+    {
+      "id": "fr.endlesssea.ext.wavewatch",
+      "name": "WaveWatch",
+      "version": 16,
+      "versionName": "1.0.0",
+      "apiVersion": 1,
+      "description": {
+        "fr": "WaveWatch — films, séries, animes et chaînes TV en direct (catalogue TMDB + agrégateurs FR)"
+      },
+      "author": {
+        "name": "j97970293-lang",
+        "url": "https://github.com/j97970293-lang/endlesssea-plugins-fr"
+      },
+      "languages": [
+        "fr"
+      ],
+      "types": [
+        "MOVIE",
+        "SERIES",
+        "ANIME",
+        "OTHER"
+      ],
+      "iconUrl": "https://www.google.com/s2/favicons?domain=wavewatch.top&sz=128",
+      "entryClass": "fr.endlesssea.ext.wavewatch.WaveWatchExtension",
+      "permissions": [
+        "INTERNET",
+        "DOWNLOAD",
+        "WEBVIEW"
+      ],
+      "capabilities": {
+        "search": true,
+        "servers": true,
+        "subtitles": true,
+        "downloads": true,
+        "auth": false
+      },
+      "nsfw": false,
+      "sourceUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr",
+      "downloadUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/WaveWatch-1.0.0.esx",
+      "fileName": "WaveWatch-1.0.0.esx"
+    },
+    {
+      "id": "fr.endlesssea.ext.xalaflix",
+      "name": "Xalaflix",
+      "version": 15,
+      "versionName": "1.0.0",
+      "apiVersion": 1,
+      "description": {
+        "fr": "Xalaflix — films et séries VF/VOSTFR, serveurs du site + agrégateurs FR"
+      },
+      "author": {
+        "name": "j97970293-lang",
+        "url": "https://github.com/j97970293-lang/endlesssea-plugins-fr"
+      },
+      "languages": [
+        "fr"
+      ],
+      "types": [
+        "MOVIE",
+        "SERIES"
+      ],
+      "iconUrl": "https://www.google.com/s2/favicons?domain=xalaflix.tax&sz=128",
+      "entryClass": "fr.endlesssea.ext.xalaflix.XalaflixExtension",
+      "permissions": [
+        "INTERNET",
+        "DOWNLOAD",
+        "WEBVIEW"
+      ],
+      "capabilities": {
+        "search": true,
+        "servers": true,
+        "subtitles": true,
+        "downloads": true,
+        "auth": false
+      },
+      "nsfw": false,
+      "sourceUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr",
+      "downloadUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Xalaflix-1.0.0.esx",
+      "fileName": "Xalaflix-1.0.0.esx"
+    },
+    {
+      "id": "fr.endlesssea.ext.zenix",
+      "name": "Zenix",
+      "version": 8,
+      "versionName": "1.0.0",
+      "apiVersion": 1,
+      "description": {
+        "fr": "Zenix — films et séries VF/VOSTFR, serveurs du site + agrégateurs TMDB (1Embed, Playerix, Wiflix, VidSrc…)"
+      },
+      "author": {
+        "name": "j97970293-lang",
+        "url": "https://github.com/j97970293-lang/endlesssea-plugins-fr"
+      },
+      "languages": [
+        "fr"
+      ],
+      "types": [
+        "MOVIE",
+        "SERIES"
+      ],
+      "iconUrl": "https://www.google.com/s2/favicons?domain=zenix.best&sz=128",
+      "entryClass": "fr.endlesssea.ext.zenix.ZenixExtension",
+      "permissions": [
+        "INTERNET",
+        "DOWNLOAD",
+        "WEBVIEW"
+      ],
+      "capabilities": {
+        "search": true,
+        "servers": true,
+        "subtitles": true,
+        "downloads": true,
+        "auth": false
+      },
+      "nsfw": false,
+      "sourceUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr",
+      "downloadUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Zenix-1.0.0.esx",
+      "fileName": "Zenix-1.0.0.esx"
+    }
+  ]
+}

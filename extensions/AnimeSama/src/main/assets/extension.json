@@ -1,0 +1,38 @@
+{
+  "id": "fr.endlesssea.ext.animesama",
+  "name": "Anime-Sama",
+  "version": 6,
+  "versionName": "1.0.0",
+  "apiVersion": 1,
+  "description": {
+    "fr": "Anime-Sama — animes VF & VOSTFR (catalogue complet, saisons, films, miroirs multiples)"
+  },
+  "author": {
+    "name": "j97970293-lang",
+    "url": "https://github.com/j97970293-lang/endlesssea-plugins-fr"
+  },
+  "languages": [
+    "fr"
+  ],
+  "types": [
+    "ANIME",
+    "MOVIE",
+    "OVA"
+  ],
+  "iconUrl": "https://www.google.com/s2/favicons?domain=anime-sama.to&sz=128",
+  "entryClass": "fr.endlesssea.ext.animesama.AnimeSamaExtension",
+  "permissions": [
+    "INTERNET",
+    "DOWNLOAD",
+    "WEBVIEW"
+  ],
+  "capabilities": {
+    "search": true,
+    "servers": true,
+    "subtitles": true,
+    "downloads": true,
+    "auth": false
+  },
+  "sourceUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr",
+  "nsfw": false
+}
