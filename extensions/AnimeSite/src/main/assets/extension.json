@@ -1,8 +1,8 @@
 {
   "id": "fr.endlesssea.ext.animesite",
   "name": "AnimeSite",
-  "version": 7,
-  "versionName": "1.2.0",
+  "version": 8,
+  "versionName": "1.3.0",
   "apiVersion": 1,
   "description": {
     "fr": "AnimeSite — animes VF/VOSTFR, lecteurs SibNet MP4 directs (tendances, nouveautés, mieux notés)"

@@ -36,7 +36,7 @@ class FrenchStreamExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://fs27.lol"
     override val providerName = "French Stream"
     override val extensionId = "fr.endlesssea.ext.frenchstream"
-    override val versionCode = 8
+    override val versionCode = 9
     override val descriptionText = "Films & séries VF/VOSTFR, multi-lecteurs."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 

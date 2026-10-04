@@ -130,8 +130,34 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
     /** Réglages propres à la source, ajoutés après l'entrée « domaine ». */
     protected open val extraSettings: List<ExtensionSetting> get() = emptyList()
 
+    /**
+     * Réglage « langue préférée » : l'app n'offre aucun choix VF/VOSTFR global,
+     * et le type LIST de l'API n'accepte pas de liste d'options — on utilise
+     * donc un champ texte libre (`vf`, `vostfr`, `vo`, `multi`, vide = auto).
+     */
+    protected open val offersLangSetting: Boolean get() = true
+
+    private fun langSetting() = ExtensionSetting(
+        key = "pref_lang",
+        title = "Langue préférée",
+        summary = "vf, vostfr, vo ou multi — les lecteurs de cette langue passent " +
+            "en premier. Laissez vide pour garder l'ordre de la source.",
+        type = ExtensionSetting.Type.TEXT,
+        defaultValue = "",
+    )
+
+    /** Langue demandée par l'utilisateur, ou `null` si « auto ». */
+    protected fun preferredLang(): AudioLang? = when (setting("pref_lang").lowercase()) {
+        "vf", "french", "francais", "français" -> AudioLang.VF
+        "vostfr", "vost", "sub" -> AudioLang.VOSTFR
+        "vo", "original" -> AudioLang.VO
+        "multi" -> AudioLang.MULTI
+        else -> null
+    }
+
     override suspend fun settings(): List<ExtensionSetting> {
-        val key = siteUrlKey ?: return extraSettings
+        val extras = extraSettings + (if (offersLangSetting) listOf(langSetting()) else emptyList())
+        val key = siteUrlKey ?: return extras
         return listOf(
             ExtensionSetting(
                 key = key,
@@ -140,7 +166,7 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
                 type = ExtensionSetting.Type.TEXT,
                 defaultValue = defaultUrl,
             )
-        ) + extraSettings
+        ) + extras
     }
 
     /** `exemple.com`, ` https://exemple.com/ ` → `https://exemple.com`. */
@@ -246,9 +272,20 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
         subtitleCallback: (SubtitleTrack) -> Unit = {},
     ): List<VideoLink> {
         if (entries.isEmpty()) throw SourceException.VideoUnavailable("aucun lecteur annoncé")
-        val ordered = entries.sortedByDescending { e ->
-            preferred != null && (e.name.equals(preferred.name, true) || e.url == preferred.id)
-        }
+        // Priorité : lecteur choisi par l'utilisateur > langue préférée > ordre source.
+        val pref = preferredLang()
+        val ordered = entries.sortedWith(
+            compareByDescending<ServerEntry> { e ->
+                preferred != null && (e.name.equals(preferred.name, true) || e.url == preferred.id)
+            }.thenByDescending { e ->
+                when {
+                    pref == null -> 0
+                    e.lang == pref -> 2
+                    e.lang == AudioLang.MULTI -> 1
+                    else -> 0
+                }
+            }
+        )
         val out = LinkedHashMap<String, VideoLink>()
         val subs = ArrayList<SubtitleTrack>()
 
@@ -306,10 +343,47 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
         PagedResult(emptyList(), page, false)
 
     override suspend fun search(query: String, page: Int, filters: FilterSet): PagedResult<SearchItem> {
+        // --- Parcours par catégorie via la recherche ---------------------------
+        // L'app ne demande que la rangée « main » (MainPageRequest) et envoie
+        // toujours un FilterSet vide : les autres rangées (genres, tendances…)
+        // seraient invisibles. On les rend donc accessibles en tapant
+        // « genre:action », « #action » ou « :action » dans la recherche —
+        // et on honore filters.genres si l'app venait à le remplir.
+        val wanted = filters.genres.firstOrNull()?.trim()
+            ?: Regex("""^\s*(?:genre\s*:|cat\s*:|[#:])\s*(.+)$""", RegexOption.IGNORE_CASE)
+                .find(query)?.groupValues?.get(1)?.trim()
+        if (!wanted.isNullOrBlank()) {
+            val row = findRow(wanted)
+            if (row != null) {
+                val res = home(row, page)
+                if (res.items.isEmpty() && page == 1) throw SourceException.NoResults
+                return res
+            }
+            if (page == 1 && homeRows.isNotEmpty()) {
+                throw SourceException.NoResults
+            }
+        }
+
         val items = searchQuery(query, page)
         if (items.isEmpty() && page == 1) throw SourceException.NoResults
         return PagedResult(items, page, items.size >= 10)
     }
+
+    /** Rangée dont la clé ou le titre correspond, accents et emojis ignorés. */
+    protected fun findRow(label: String): HomeRow? {
+        fun norm(v: String): String {
+            val stripped = java.text.Normalizer.normalize(v, java.text.Normalizer.Form.NFD)
+                .replace(Regex("""\p{M}+"""), "")
+            return stripped.lowercase().filter { it.isLetterOrDigit() }
+        }
+        val n = norm(label)
+        if (n.isEmpty()) return null
+        return homeRows.firstOrNull { norm(it.key) == n || norm(it.title) == n }
+            ?: homeRows.firstOrNull { norm(it.title).contains(n) || norm(it.key).contains(n) }
+    }
+
+    /** Catégories proposées par la source (rangées déclarées). */
+    fun categories(): List<String> = homeRows.map { it.title }
 
     protected open suspend fun searchQuery(query: String, page: Int): List<SearchItem> = emptyList()
 
@@ -328,11 +402,18 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
     protected abstract suspend fun details(url: String): MediaDetails
 
     final override suspend fun load(url: String): MediaDetails {
-        val d = details(url)
-        if (d.characters.isNotEmpty() && d.trailerUrl != null) return d
-        val tmdb = tmdbIdOf(d) ?: return d
-        val isTv = d.type == MediaType.SERIES || d.type == MediaType.ANIME
-        return runCatching { Tmdb.enrichOrSame(http, d, tmdb, isTv) }.getOrDefault(d)
+        val base = details(url)
+        val tmdb = tmdbIdOf(base) ?: return base
+        val isTv = base.type == MediaType.SERIES || base.type == MediaType.ANIME
+
+        // 1) vignettes d'épisodes manquantes (copy() : seasons est un val, donc
+        //    à faire AVANT de poser les champs hors constructeur).
+        val withStills =
+            if (isTv) runCatching { Tmdb.withStills(http, base, tmdb) }.getOrDefault(base) else base
+
+        // 2) bande-annonce + distribution (propriétés var, posées en dernier).
+        if (withStills.characters.isNotEmpty() && withStills.trailerUrl != null) return withStills
+        return runCatching { Tmdb.enrichOrSame(http, withStills, tmdb, isTv) }.getOrDefault(withStills)
     }
 
     /**

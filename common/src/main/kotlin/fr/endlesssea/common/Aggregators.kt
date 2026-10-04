@@ -174,7 +174,13 @@ object Aggregators {
             val nodes = if (isTv) root["data"].list.flatMap { it["links"].list } else root["data"]["links"].list
             nodes.forEach { n ->
                 val u = (n.string ?: n.str("url"))?.takeIf { it.startsWith("http") } ?: return@forEach
-                out += ServerEntry("Movix · ${Text.host(u)}", u, direct = Text.streamType(u) != dev.endlesssea.extensions.api.model.StreamType.EMBED)
+                val lang = n.str("lang") ?: n.str("language") ?: n.str("version")
+                out += ServerEntry(
+                    name = "Movix · " + Text.host(u) + (lang?.let { " · ${it.uppercase()}" } ?: ""),
+                    url = u,
+                    lang = Text.audioLang(lang),
+                    direct = Text.streamType(u) != dev.endlesssea.extensions.api.model.StreamType.EMBED,
+                )
             }
         }
 
@@ -221,14 +227,24 @@ object Aggregators {
                 val real = Regex("""[?&]url=([^&]+)""").find(u)?.groupValues?.get(1)
                     ?.let { runCatching { java.net.URLDecoder.decode(it, "UTF-8") }.getOrNull() } ?: u
                 if (real.startsWith("http") && ".m3u8" in real) {
-                    out += ServerEntry(Text.host(real), real, direct = true)
+                    val lang = s.str("lang")
+                    out += ServerEntry(
+                        name = Text.host(real) + (lang?.let { " · ${it.uppercase()}" } ?: ""),
+                        url = real, lang = Text.audioLang(lang), direct = true,
+                    )
                 }
                 return@forEach
             }
             if (!u.startsWith("http")) return@forEach
             val host = Text.host(u)
-            if (!seen.add(host)) return@forEach // un seul miroir par hébergeur
-            out += ServerEntry(host, u)
+            val lang = s.str("lang")
+            // un seul miroir par hébergeur *et par langue* (sinon la VF était
+            // écrasée par la VO du même hébergeur)
+            if (!seen.add(host + "/" + lang.orEmpty())) return@forEach
+            out += ServerEntry(
+                name = host + (lang?.let { " · ${it.uppercase()}" } ?: ""),
+                url = u, lang = Text.audioLang(lang),
+            )
         }
         return out
     }

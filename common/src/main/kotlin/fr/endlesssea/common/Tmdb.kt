@@ -147,6 +147,21 @@ object Tmdb {
         val d = json(http, "/$kind/$tmdb", "append_to_response=videos,credits")
             ?: return details
 
+        // --- Note : l'API Endless Sea n'a aucun champ « rating ». En attendant,
+        // on la place en tête du synopsis, seul endroit libre affiché par l'app.
+        val score = d["vote_average"].double?.takeIf { it > 0.0 }
+        val votes = d["vote_count"].int ?: 0
+        val withNote = if (score == null || details.synopsis?.startsWith("⭐") == true) {
+            details
+        } else {
+            val note = "⭐ %.1f/10".format(score).replace('.', ',') +
+                (if (votes > 0) " · $votes votes (TMDB)" else " (TMDB)")
+            details.copy(
+                synopsis = listOfNotNull(note, details.synopsis?.takeIf { it.isNotBlank() })
+                    .joinToString("\n\n")
+            )
+        }
+
         val videos = d["videos"]["results"].list
         fun pick(lang: String?, type: String) = videos.firstOrNull {
             it.str("site").equals("YouTube", true) &&
@@ -155,9 +170,9 @@ object Tmdb {
         }?.str("key")
         val key = pick("fr", "Trailer") ?: pick("fr", "Teaser")
             ?: pick(null, "Trailer") ?: pick(null, "Teaser")
-        if (key != null) details.trailerUrl = "https://www.youtube.com/watch?v=$key"
+        if (key != null) withNote.trailerUrl = "https://www.youtube.com/watch?v=$key"
 
-        details.characters = d["credits"]["cast"].list.take(25).mapNotNull { c ->
+        withNote.characters = d["credits"]["cast"].list.take(25).mapNotNull { c ->
             val actor = c.str("name")?.trim().orEmpty()
             val role = c.str("character")?.trim().orEmpty()
             if (actor.isEmpty() && role.isEmpty()) return@mapNotNull null
@@ -169,13 +184,45 @@ object Tmdb {
                 imageUrl = c.str("profile_path")?.let { IMG + it },
             )
         }
-        return details
+        return withNote
     }
 
     /** Variante tolérante : ne casse jamais la fiche si TMDB est injoignable. */
     suspend fun enrichOrSame(http: Http, details: MediaDetails, tmdb: String?, isTv: Boolean): MediaDetails {
         val id = tmdb?.trim()?.takeIf { it.isNotEmpty() && it.all(Char::isDigit) } ?: return details
         return runCatching { enrich(http, details, id, isTv) }.getOrDefault(details)
+    }
+
+
+    /**
+     * Complète les vignettes d'épisodes manquantes avec les « stills » TMDB.
+     *
+     * Beaucoup de sources FR ne publient aucune image par épisode ; l'app en
+     * affiche une quand `Episode.thumbnailUrl` est renseigné. On ne touche
+     * qu'aux épisodes vides, et uniquement si la saison existe côté TMDB.
+     */
+    suspend fun withStills(http: Http, details: MediaDetails, tmdb: String): MediaDetails {
+        val seasons = details.seasons
+        if (seasons.isEmpty()) return details
+        if (seasons.all { s -> s.episodes.all { it.thumbnailUrl != null } }) return details
+
+        val filled = seasons.map { season ->
+            if (season.episodes.all { it.thumbnailUrl != null }) return@map season
+            val sd = json(http, "/tv/$tmdb/season/${season.number}") ?: return@map season
+            val stills = sd["episodes"].list.mapNotNull { e ->
+                val n = e["episode_number"].int ?: return@mapNotNull null
+                val path = e.str("still_path") ?: return@mapNotNull null
+                n to (STILL + path)
+            }.toMap()
+            if (stills.isEmpty()) return@map season
+            season.copy(
+                episodes = season.episodes.map { ep ->
+                    if (ep.thumbnailUrl != null) ep
+                    else ep.copy(thumbnailUrl = stills[ep.number.toInt()])
+                }
+            )
+        }
+        return details.copy(seasons = filled)
     }
 
 }

@@ -1,8 +1,8 @@
 {
   "id": "fr.endlesssea.ext.wavewatch",
   "name": "WaveWatch",
-  "version": 18,
-  "versionName": "1.2.0",
+  "version": 19,
+  "versionName": "1.3.0",
   "apiVersion": 1,
   "description": {
     "fr": "WaveWatch — films, séries, animes et chaînes TV en direct (catalogue TMDB + agrégateurs FR)"

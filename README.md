@@ -122,3 +122,30 @@ docs/         architecture et guide de contribution
 Ces extensions ne stockent ni n'hébergent aucun contenu : elles se contentent
 d'indexer des sites publics. Vous êtes responsable de l'usage que vous en
 faites et du respect du droit applicable dans votre pays.
+
+## Parcourir par genre, et langue préférée (v1.3.0)
+
+L'application ne réclame qu'une seule rangée par extension (`category = "main"`)
+et envoie toujours un filtre vide : les rangées « Action », « Horreur »,
+« Tendances »… déclarées par chaque source seraient donc invisibles.
+
+En attendant une évolution de l'app (voir `docs/DEMANDES-API.md`), elles sont
+accessibles **depuis la recherche** :
+
+```
+genre:action        #horreur        :animation        cat:tendances
+```
+
+La correspondance ignore accents, emojis et majuscules ; sans correspondance,
+la recherche normale reprend la main.
+
+Deux réglages s'ajoutent par source :
+
+| Réglage | Valeurs | Effet |
+|---|---|---|
+| `pref_lang` | `vf`, `vostfr`, `vo`, `multi`, vide | place les lecteurs de cette langue en tête (MULTI en second) |
+| `site_url` | une adresse | force le domaine de la source |
+
+Les fiches affichent aussi, quand un identifiant TMDB est connu : la **note**
+(en tête du synopsis, faute de champ dédié dans l'API), la **bande-annonce**,
+la **distribution** et les **vignettes d'épisodes** manquantes.

@@ -91,10 +91,15 @@ object Text {
         val l = label?.lowercase().orEmpty()
         return when {
             "multi" in l -> AudioLang.MULTI
-            "vostfr" in l || "vost" in l || "sub" in l || "subbed" in l -> AudioLang.VOSTFR
-            "vf" in l || "fr" == l.trim() || "french" in l || "truefrench" in l || "vff" in l ||
-                "vfq" in l || "dub" in l -> AudioLang.VF
-            "vo" in l || "raw" in l -> AudioLang.VO
+            "vostfr" in l || "vost" in l || "sub" in l || "subbed" in l ||
+                "sous-titr" in l || "vosta" in l -> AudioLang.VOSTFR
+            // « truefrench » contient déjà « french » ; « vfi »/« vfq »/« vff » sont
+            // des variantes de doublage ; « fr »/« français » arrivent tels quels
+            // des agrégateurs.
+            "vf" in l || "french" in l || "francais" in l || "français" in l ||
+                "dub" in l || l.trim() in setOf("fr", "fr-fr", "fra") -> AudioLang.VF
+            "vo" in l || "raw" in l || "original" in l ||
+                l.trim() in setOf("en", "en-us", "jp", "ja") -> AudioLang.VO
             else -> AudioLang.OTHER
         }
     }
