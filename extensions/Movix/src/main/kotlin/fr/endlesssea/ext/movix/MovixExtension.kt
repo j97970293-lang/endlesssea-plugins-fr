@@ -36,7 +36,7 @@ class MovixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     private val api get() = "https://api." + mainUrl.removePrefix("https://").removePrefix("http://").trimEnd('/')
     override val providerName = "Movix"
     override val extensionId = "fr.endlesssea.ext.movix"
-    override val versionCode = 13
+    override val versionCode = 14
     override val descriptionText = "Catalogue TMDB en français, lecteurs du réseau Movix et agrégateurs FR."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 

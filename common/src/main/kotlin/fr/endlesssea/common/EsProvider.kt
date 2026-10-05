@@ -77,6 +77,20 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
     open val author: String = "j97970293-lang"
     open val descriptionText: String = providerName
 
+    /**
+     * Icône affichée par l'accueil, la recherche et l'écran Extensions
+     * (Endless Sea 0.9.0 — `ExtensionInfo.iconUrl`). Par défaut le favicon du
+     * domaine réellement utilisé : elle suit donc automatiquement les
+     * migrations de domaine (réglage `site_url` ou résolution dynamique).
+     * PNG/JPEG/WebP/GIF uniquement : le chargeur de l'app refuse les SVG.
+     */
+    open val iconUrl: String?
+        get() {
+            val url = runCatching { mainUrl }.getOrNull()?.takeIf { it.isNotBlank() } ?: defaultUrl
+            val host = Text.host(url).removePrefix("www.").takeIf { it.isNotBlank() } ?: return null
+            return "https://www.google.com/s2/favicons?domain=$host&sz=128"
+        }
+
     override val info: ExtensionInfo by lazy {
         ExtensionInfo(
             id = extensionId,
@@ -93,6 +107,7 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
             author = author,
             description = descriptionText,
             nsfw = nsfw,
+            iconUrl = iconUrl,
         )
     }
 
