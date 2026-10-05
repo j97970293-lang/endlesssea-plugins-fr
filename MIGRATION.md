@@ -107,3 +107,4 @@ Depuis la v1.2.0, les providers n'implémentent plus `load(url)` mais
 (`movie|123`, `x:movie:123`, `tv|123|1|1`…).
 
 | 0.7.0 | `categories()`/`HomeCategory`, `rating`/`ratingCount`, `SearchItem.audioLangs`/`genres`, `ExtensionSetting.options`, `ExtensionContext.cacheDir`, préférence globale `app.pref_lang` | v1.4.0 — rangées exposées en catalogues, notes et genres TMDB sur les vignettes, réglage de langue en liste, cache disque 6 h des métadonnées |
+| 0.8.0 (lot A-1) | `RepositoryIndex.iconUrl` (ajout purement additif), durcissement des images via `EsImages` : PNG/JPEG/WebP/GIF uniquement, **pas de SVG distant**, `javascript:` rejeté, croix rouge si l'icône échoue | v1.5.0 — `repo/index.json` expose `iconUrl` (PNG 256×256 servi par `raw.githubusercontent.com`) et les 17 icônes de sources sont revalidées à chaque revue (une icône pointant vers un domaine mort renvoie 404 et affiche la croix rouge) |

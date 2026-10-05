@@ -1,8 +1,8 @@
 {
   "id": "fr.endlesssea.ext.zenix",
   "name": "Zenix",
-  "version": 12,
-  "versionName": "1.4.0",
+  "version": 13,
+  "versionName": "1.5.0",
   "apiVersion": 1,
   "description": {
     "fr": "Zenix — films et séries VF/VOSTFR, serveurs du site + agrégateurs TMDB (1Embed, Playerix, Wiflix, VidSrc…)"

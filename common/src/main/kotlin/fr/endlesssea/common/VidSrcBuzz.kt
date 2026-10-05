@@ -30,7 +30,7 @@ object VidSrcBuzz {
             if (episode != null) append("/$episode")
         }
         val html = http.getOrNull(embedUrl)?.text ?: return emptyList()
-        val qRaw = Regex("""var Q = (\{.*?\});""", RegexOption.DOT_MATCHES_ALL)
+        val qRaw = Regex("""var\s+Q\s*=\s*(\{.*?\})\s*;""", RegexOption.DOT_MATCHES_ALL)
             .find(html)?.groupValues?.get(1) ?: return emptyList()
         val q = Json.parseOrNull(qRaw) ?: return emptyList()
         val id = q.str("id") ?: return emptyList()

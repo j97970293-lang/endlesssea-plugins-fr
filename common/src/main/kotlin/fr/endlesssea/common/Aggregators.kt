@@ -75,12 +75,16 @@ object Aggregators {
     /** moviesapi.to — lecteur public TMDB (API interne /api/vidora). */
     suspend fun moviesApi(http: Http, tmdb: String, season: Int? = null, episode: Int? = null): List<ServerEntry> {
         val path = if (season != null && episode != null) "/v1/tv/$tmdb/$season/$episode" else "/v1/movie/$tmdb"
+        // L'API exige la clé **et** un Referer de son propre domaine :
+        // avec la clé seule elle répond 403, avec le Referer seul 401.
         val json = http.getOrNull(
             "https://moviesapi.to/api/vidora$path",
             mapOf(
                 "x-player-key" to "3a67e8866ae1d2bb9e81fe7f73315a56eb3bdf5e3e755c7554c8be6910aa6b13",
                 "Accept" to "application/json",
+                "Origin" to "https://moviesapi.to",
             ),
+            referer = "https://moviesapi.to/",
         )?.text ?: return emptyList()
         val url = Regex(""""url"\s*:\s*"(https?://[^"]+)"""").find(json)?.groupValues?.get(1) ?: return emptyList()
         return listOf(ServerEntry("MoviesApi", url, direct = url.contains(".m3u8")))

@@ -1,8 +1,8 @@
 {
   "id": "fr.endlesssea.ext.xalaflix",
   "name": "Xalaflix",
-  "version": 19,
-  "versionName": "1.4.0",
+  "version": 20,
+  "versionName": "1.5.0",
   "apiVersion": 1,
   "description": {
     "fr": "Xalaflix — films et séries VF/VOSTFR, serveurs du site + agrégateurs FR"

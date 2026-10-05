@@ -3,7 +3,7 @@
 
 Le schéma est celui de `dev.endlesssea.extensions.api.manifest` :
 
-    RepositoryIndex    { name, description, url, extensions[] }
+    RepositoryIndex    { name, description, url, iconUrl, extensions[] }
     RepoExtensionEntry { id, name, version, versionName, apiVersion, author,
                          description, languages, types, permissions,
                          minAppVersion, size, iconUrl, apkUrl, sha256, kind,
@@ -27,6 +27,7 @@ import re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 REPO_URL = "https://github.com/j97970293-lang/endlesssea-plugins-fr"
+RAW_URL = "https://raw.githubusercontent.com/j97970293-lang/endlesssea-plugins-fr/main"
 DEFAULT_BASE = f"{REPO_URL}/releases/latest/download"
 OUT = ROOT / "repo" / "index.json"
 
@@ -100,6 +101,9 @@ def main() -> int:
         "name": "Endless Sea · Extensions FR",
         "description": "Sources francophones (films, séries, animes, TV) pour Endless Sea.",
         "url": REPO_URL,
+        # §4 de l'app 0.8.0 : icône du dépôt. Servie en PNG brut depuis la
+        # branche main (pas de SVG : le chargeur d'images n'en fait pas).
+        "iconUrl": f"{RAW_URL}/repo/icon.png",
         "extensions": extensions,
     }
 
