@@ -61,7 +61,7 @@ object VidSrcBuzz {
                 url = streamUrl,
                 streamType = Text.streamType(streamUrl),
                 quality = Text.quality(streamUrl),
-                server = "VidSrc · $name",
+                server = Text.serverLabel("VidSrc · $name"),
                 headers = mapOf("Referer" to "$BASE/", "User-Agent" to http.userAgent),
             )
         }

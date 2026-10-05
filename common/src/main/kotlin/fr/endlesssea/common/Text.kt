@@ -155,4 +155,82 @@ object Text {
         .ifBlank { url.hashCode().toUInt().toString(16) }
 
     fun idOf(prefix: String, url: String): String = "$prefix:${slug(url)}"
+
+    // ---------------------------------------------------------------- serveurs
+
+    /** Marques connues : clé = base d'hôte normalisée, valeur = libellé affiché. */
+    private val SERVER_BRANDS = mapOf(
+        "vidara" to "Vidara", "streamup" to "StreamUp", "streamu" to "StreamUp",
+        "sibnet" to "Sibnet", "sendvid" to "Sendvid", "vk" to "VK", "ok" to "OK.ru",
+        "okru" to "OK.ru", "youtube" to "YouTube", "youtu" to "YouTube",
+        "dailymotion" to "Dailymotion", "dood" to "Doodstream", "doodstream" to "Doodstream",
+        "voe" to "Voe", "upstream" to "Upstream", "uqload" to "Uqload", "lulu" to "Luluvdo",
+        "luluvdo" to "Luluvdo", "vidmoly" to "Vidmoly", "filemoon" to "Filemoon",
+        "moonplayer" to "Filemoon", "streamtape" to "Streamtape", "mixdrop" to "Mixdrop",
+        "netu" to "Netu", "vudeo" to "Vudeo", "fsvid" to "FSVid", "movearnpre" to "Movearnpre",
+        "playerix" to "Playerix", "frembed" to "Frembed", "vidsrc" to "VidSrc",
+        "embed" to "2Embed", "videasy" to "Videasy", "peachify" to "Peachify",
+        "vidfast" to "VidFast", "vidnest" to "VidNest", "wiflix" to "Wiflix",
+        "purstream" to "Purstream", "movix" to "Movix", "zeus" to "Zeus", "mouve" to "Mouve",
+        "oneembed" to "OneEmbed", "wwembed" to "WaveWatch", "wavewatch" to "WaveWatch",
+        "anime-sama" to "Anime-Sama", "animesama" to "Anime-Sama",
+    )
+
+    private val LANG_TOKENS = setOf(
+        "vf", "vff", "vfq", "vostfr", "vost", "vo", "multi", "sub", "subfr",
+        "fr", "french", "truefrench", "vf1", "vf2", "vostfr1", "vostfr2",
+    )
+
+    /**
+     * Libellé de serveur **canonique et stable**.
+     *
+     * Depuis Endless Sea 0.9.0, la fiche « Serveurs & priorité » regroupe les
+     * liens par `VideoLink.server` et mémorise l'ordre choisi par l'utilisateur
+     * sous forme de chaînes exactes. Un libellé contenant le miroir du jour
+     * (`vidara23.site`), la langue (`Vidara VF`) ou la qualité ferait donc
+     * exploser la liste et perdrait l'ordre à chaque rotation de domaine —
+     * la langue est déjà portée par `VideoLink.audioLang`, la qualité par
+     * `VideoLink.quality`.
+     *
+     * On ramène donc chaque libellé à la marque : `https://vidara23.site/e/x`,
+     * `vidara19.com`, `VIDARA vostfr` → `Vidara`.
+     */
+    fun serverLabel(raw: String?): String {
+        val input = raw?.trim().orEmpty()
+        if (input.isEmpty()) return "Lecteur"
+        // Libellés composites « Source · Serveur » : on normalise chaque moitié.
+        if (input.contains('·')) {
+            val parts = input.split('·').map { serverLabel(it) }.filter { it != "Lecteur" }.distinct()
+            return parts.joinToString(" · ").ifBlank { "Lecteur" }
+        }
+        val base = if (input.startsWith("http", true)) host(input) else input
+        val cleaned = base.removePrefix("www.").substringBefore('/').substringBefore('?').trim()
+        // Hôte (« vidara23.site », « wwembed.wavewatch.top ») : on garde l'étiquette
+        // de marque, sans les chiffres du miroir du jour.
+        val label = if (!cleaned.contains(' ') && cleaned.contains('.')) {
+            val parts = cleaned.split('.').filter { it.isNotEmpty() }
+            val head = parts.firstOrNull().orEmpty().trimEnd('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
+            // Sous-domaine générique (« wwembed.wavewatch.top ») : on tente aussi le domaine.
+            val domain = parts.getOrNull(parts.size - 2).orEmpty()
+                .trimEnd('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
+            SERVER_BRANDS[head.lowercase()]?.let { return it }
+            SERVER_BRANDS[domain.lowercase()]?.let { return it }
+            head
+        } else {
+            // Libellé humain : on retire les jetons de langue et de qualité,
+            // déjà portés par VideoLink.audioLang / VideoLink.quality.
+            cleaned.split(' ', '_', '|')
+                .map { it.trim() }
+                .filter { w ->
+                    w.isNotEmpty() &&
+                        w.lowercase() !in LANG_TOKENS &&
+                        !Regex("^\\d{3,4}p$", RegexOption.IGNORE_CASE).matches(w)
+                }
+                .joinToString(" ")
+        }
+        val key = label.lowercase().trim()
+        SERVER_BRANDS[key]?.let { return it }
+        if (key.isEmpty()) return "Lecteur"
+        return label.trim().replaceFirstChar { it.uppercase() }
+    }
 }

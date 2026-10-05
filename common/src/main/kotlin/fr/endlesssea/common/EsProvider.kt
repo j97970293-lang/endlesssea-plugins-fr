@@ -343,7 +343,7 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
                             url = entry.url,
                             streamType = type,
                             quality = Text.quality(entry.url),
-                            server = entry.name,
+                            server = Text.serverLabel(entry.name),
                             headers = buildMap {
                                 put("User-Agent", http.userAgent)
                                 put("Referer", entry.referer ?: mainUrl)

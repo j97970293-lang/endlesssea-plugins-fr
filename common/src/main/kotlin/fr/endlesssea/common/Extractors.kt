@@ -31,7 +31,7 @@ abstract class EsExtractor(protected val http: Http) : ExtractorApi() {
         url = url,
         streamType = Text.streamType(url),
         quality = if (quality == Quality.UNKNOWN) Text.quality(url) else quality,
-        server = serverName,
+        server = Text.serverLabel(serverName),
         headers = buildMap {
             put("User-Agent", http.userAgent)
             if (referer != null) put("Referer", referer)
@@ -124,7 +124,8 @@ object Extractors {
                 extractor.getUrl(clean, referer, subtitleCallback) {}
             }.getOrDefault(emptyList())
             if (links.isNotEmpty()) {
-                return if (serverName == null) links else links.map { it.copy(server = serverName) }
+                return if (serverName == null) links
+                else links.map { it.copy(server = Text.serverLabel(serverName)) }
             }
         }
         return emptyList()
@@ -578,7 +579,7 @@ class GenericHost(http: Http) : EsExtractor(http) {
         }
         val host = Text.host(url).removePrefix("www.").substringBefore('.')
             .replaceFirstChar { it.uppercase() }
-        return genericSniff(res.text, url).map { it.copy(server = host.ifBlank { "Lecteur" }) }
+        return genericSniff(res.text, url).map { it.copy(server = Text.serverLabel(host)) }
             .onEach(callback)
     }
 }

@@ -23,11 +23,12 @@ object M3u8 {
         referer: String? = null,
         headers: Map<String, String> = emptyMap(),
     ): List<VideoLink> {
+        val label = Text.serverLabel(serverName)
         val base = VideoLink(
             url = masterUrl,
             streamType = StreamType.HLS,
             quality = Quality.UNKNOWN,
-            server = serverName,
+            server = label,
             headers = headers + listOfNotNull(referer?.let { "Referer" to it }).toMap(),
         )
         val body = runCatching { http.get(masterUrl, headers = headers, referer = referer).text }
@@ -44,7 +45,7 @@ object M3u8 {
                 url = resolve(masterUrl, rel),
                 streamType = StreamType.HLS,
                 quality = Text.quality(height ?: name),
-                server = serverName,
+                server = label,
                 headers = base.headers,
             )
         }.sortedByDescending { it.quality.pixels }.toList()

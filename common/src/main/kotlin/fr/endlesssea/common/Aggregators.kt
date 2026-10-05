@@ -315,7 +315,15 @@ class OneEmbed(http: Http) : EsExtractor(http) {
         return servers.flatMap { (path, serverName) ->
             val absolute = if (path.startsWith("http")) path else "$mainUrl$path"
             M3u8.variants(http, absolute, "$name · $serverName")
-                .ifEmpty { listOf(VideoLink(absolute, StreamType.HLS, server = "$name · $serverName")) }
+                .ifEmpty {
+                    listOf(
+                        VideoLink(
+                            absolute,
+                            StreamType.HLS,
+                            server = Text.serverLabel("$name · $serverName"),
+                        )
+                    )
+                }
         }.onEach(callback)
     }
 }
