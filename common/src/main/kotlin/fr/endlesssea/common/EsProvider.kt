@@ -224,7 +224,7 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
         title = Text.decodeHtml(title).trim(),
         altTitles = altTitles,
         url = Text.fixUrl(url, mainUrl),
-        posterUrl = poster?.let { Text.fixUrlNull(it, mainUrl) },
+        posterUrl = Text.imageUrl(poster, mainUrl),
         type = type,
         year = year,
     ).also { s ->
@@ -265,8 +265,8 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
             url = Text.fixUrl(url, mainUrl),
             title = Text.decodeHtml(title).trim(),
             synopsis = synopsis?.let { Text.stripHtml(it) }?.takeIf { it.isNotBlank() },
-            posterUrl = poster?.let { Text.fixUrlNull(it, mainUrl) },
-            bannerUrl = banner?.let { Text.fixUrlNull(it, mainUrl) },
+            posterUrl = Text.imageUrl(poster, mainUrl),
+            bannerUrl = Text.imageUrl(banner, mainUrl),
             type = type,
             year = year,
             genres = genres,
@@ -295,7 +295,7 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
         number = number,
         season = season,
         title = title?.let { Text.decodeHtml(it).trim() },
-        thumbnailUrl = thumbnail?.let { Text.fixUrlNull(it, mainUrl) },
+        thumbnailUrl = Text.imageUrl(thumbnail, mainUrl),
         data = payload,
     )
 
@@ -386,7 +386,7 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
     override suspend fun getMainPage(request: MainPageRequest): PagedResult<SearchItem> {
         val row = homeRows.firstOrNull { it.key == request.category } ?: homeRows.firstOrNull()
         ?: return PagedResult(emptyList(), request.page, false)
-        return home(row, request.page)
+        return safeImages(home(row, request.page))
     }
 
     /** À implémenter si [homeRows] n'est pas vide. */
@@ -406,7 +406,7 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
         if (!wanted.isNullOrBlank()) {
             val row = findRow(wanted)
             if (row != null) {
-                val res = home(row, page)
+                val res = safeImages(home(row, page))
                 if (res.items.isEmpty() && page == 1) throw SourceException.NoResults
                 return res
             }
@@ -417,7 +417,27 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
 
         val items = searchQuery(query, page)
         if (items.isEmpty() && page == 1) throw SourceException.NoResults
-        return PagedResult(items, page, items.size >= 10)
+        return safeImages(PagedResult(items, page, items.size >= 10))
+    }
+
+    /**
+     * Garde-fou vignettes : une affiche relative ou protocole-relative n'affiche
+     * plus rien depuis l'app 0.8.0 (§4). On normalise donc toute la page, y
+     * compris quand un provider construit ses `SearchItem` sans passer par
+     * [item]. `copy()` réinitialisant les propriétés hors constructeur, on les
+     * repose derrière.
+     */
+    protected fun safeImages(res: PagedResult<SearchItem>): PagedResult<SearchItem> {
+        val items = res.items.map { s ->
+            val poster = Text.imageUrl(s.posterUrl, mainUrl)
+            if (poster == s.posterUrl) s
+            else s.copy(posterUrl = poster).also { out ->
+                out.rating = s.rating
+                out.audioLangs = s.audioLangs
+                out.genres = s.genres
+            }
+        }
+        return if (items == res.items) res else PagedResult(items, res.page, res.hasNextPage)
     }
 
     /** Rangée dont la clé ou le titre correspond, accents et emojis ignorés. */
@@ -452,8 +472,33 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
      */
     protected abstract suspend fun details(url: String): MediaDetails
 
+    /**
+     * Normalise toutes les URL d'images d'une fiche (affiche, bannière,
+     * vignettes d'épisodes) — voir [Text.imageUrl]. Les propriétés hors
+     * constructeur (`characters`, `trailerUrl`, `rating`, `ratingCount`) sont
+     * reposées après le `copy()`, qui les réinitialise.
+     */
+    private fun withSafeImages(d: MediaDetails): MediaDetails {
+        val poster = Text.imageUrl(d.posterUrl, mainUrl)
+        val banner = Text.imageUrl(d.bannerUrl, mainUrl)
+        val seasons = d.seasons.map { season ->
+            val eps = season.episodes.map { ep ->
+                val thumb = Text.imageUrl(ep.thumbnailUrl, mainUrl)
+                if (thumb == ep.thumbnailUrl) ep else ep.copy(thumbnailUrl = thumb)
+            }
+            if (eps == season.episodes) season else season.copy(episodes = eps)
+        }
+        if (poster == d.posterUrl && banner == d.bannerUrl && seasons == d.seasons) return d
+        return d.copy(posterUrl = poster, bannerUrl = banner, seasons = seasons).also { out ->
+            out.characters = d.characters
+            out.trailerUrl = d.trailerUrl
+            out.rating = d.rating
+            out.ratingCount = d.ratingCount
+        }
+    }
+
     final override suspend fun load(url: String): MediaDetails {
-        val base = details(url)
+        val base = withSafeImages(details(url))
         val tmdb = tmdbIdOf(base) ?: return base
         val isTv = base.type == MediaType.SERIES || base.type == MediaType.ANIME
 
@@ -463,8 +508,9 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
             if (isTv) runCatching { Tmdb.withStills(http, base, tmdb) }.getOrDefault(base) else base
 
         // 2) bande-annonce + distribution (propriétés var, posées en dernier).
-        if (withStills.characters.isNotEmpty() && withStills.trailerUrl != null) return withStills
-        return runCatching { Tmdb.enrichOrSame(http, withStills, tmdb, isTv) }.getOrDefault(withStills)
+        if (withStills.characters.isNotEmpty() && withStills.trailerUrl != null) return withSafeImages(withStills)
+        val enriched = runCatching { Tmdb.enrichOrSame(http, withStills, tmdb, isTv) }.getOrDefault(withStills)
+        return withSafeImages(enriched)
     }
 
     /**

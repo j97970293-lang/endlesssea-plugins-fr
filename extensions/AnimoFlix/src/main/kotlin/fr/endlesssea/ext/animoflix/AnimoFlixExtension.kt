@@ -37,7 +37,7 @@ class AnimoFlixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://animoflix.to"
     override val providerName = "AnimoFlix"
     override val extensionId = "fr.endlesssea.ext.animoflix"
-    override val versionCode = 20
+    override val versionCode = 21
     override val descriptionText = "Animes VF et VOSTFR en streaming."
     override val supportedTypes = setOf(MediaType.ANIME, MediaType.MOVIE)
 

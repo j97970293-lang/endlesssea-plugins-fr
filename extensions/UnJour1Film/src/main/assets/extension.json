@@ -1,8 +1,8 @@
 {
   "id": "fr.endlesssea.ext.unjour1film",
   "name": "1Jour1Film",
-  "version": 18,
-  "versionName": "1.6.0",
+  "version": 19,
+  "versionName": "1.7.0",
   "apiVersion": 1,
   "description": {
     "fr": "1JOUR1FILM — films et séries VF en streaming (catalogue WordPress + lecteurs TMDB)"

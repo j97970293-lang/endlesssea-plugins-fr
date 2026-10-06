@@ -30,7 +30,7 @@ class TeleFranceExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://iptv-org.github.io"
     override val providerName = "Télé FR Direct"
     override val extensionId = "fr.endlesssea.ext.telefrance"
-    override val versionCode = 9
+    override val versionCode = 10
     override val descriptionText =
         "Chaînes françaises, francophones et malgaches en direct (playlists IPTV publiques)."
     override val supportedTypes = setOf(MediaType.OTHER)

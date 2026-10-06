@@ -15,6 +15,7 @@ import fr.endlesssea.common.ServerEntry
 import fr.endlesssea.common.Tmdb
 import fr.endlesssea.common.TmdbEmbeds
 import fr.endlesssea.common.VidSrcBuzz
+import fr.endlesssea.common.Text
 
 /**
  * Frembed (frembed.surf / frembed.skin) — portage **natif** Endless Sea.
@@ -34,7 +35,7 @@ class FrembedExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://frembed.surf"
     override val providerName = "Frembed"
     override val extensionId = "fr.endlesssea.ext.frembed"
-    override val versionCode = 16
+    override val versionCode = 17
     override val descriptionText = "Réseau de lecteurs FR indexé par TMDB (Voe, Dood, Uqload…)."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 
@@ -85,7 +86,7 @@ class FrembedExtension(ctx: ExtensionContext) : EsProvider(ctx) {
                 data,
                 SearchItem(
                     id = data, title = title, url = data,
-                    posterUrl = poster?.let { if (it.startsWith("http")) it else origin + it },
+                    posterUrl = Text.imageUrl(poster, origin),
                     type = if (isTv) MediaType.SERIES else MediaType.MOVIE,
                 ),
             )

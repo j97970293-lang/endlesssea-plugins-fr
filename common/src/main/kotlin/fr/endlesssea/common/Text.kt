@@ -56,6 +56,31 @@ object Text {
 
     fun fixUrlNull(url: String?, mainUrl: String): String? = fixUrl(url, mainUrl).takeIf { it.isNotBlank() }
 
+    /**
+     * URL d'image **affichable par l'app**.
+     *
+     * Depuis la 0.8.0 (§4), `EsImages.safeImageUrl()` rejette tout ce qui ne
+     * commence pas par `http://` ou `https://` : une affiche relative
+     * (`/checkimg.php?urli=…`), protocole-relative (`//cdn/…`) ou encodée en
+     * entités HTML (`&amp;`) n'affiche plus rien du tout. On normalise donc
+     * systématiquement avant de remplir `posterUrl`/`bannerUrl`/`thumbnailUrl`.
+     *
+     * Renvoie `null` si l'URL est inutilisable (vide, `data:`, `javascript:`).
+     */
+    fun imageUrl(raw: String?, base: String): String? {
+        var u = raw?.trim().orEmpty()
+        if (u.isEmpty()) return null
+        // Valeur extraite d'un style CSS : background-image:url('…')
+        if (u.startsWith("url(", true)) u = u.removePrefix("url(").removePrefix("URL(").removeSuffix(")")
+        u = u.trim().trim('\'', '"').trim()
+        u = decodeHtml(u)
+        val lower = u.lowercase()
+        if (lower.startsWith("data:") || lower.startsWith("javascript:") || lower.startsWith("blob:")) return null
+        val abs = fixUrl(u, base)
+        if (!abs.startsWith("http://") && !abs.startsWith("https://")) return null
+        return abs.replace(" ", "%20")
+    }
+
     fun host(url: String): String = runCatching { URI(url).host.orEmpty() }.getOrDefault("")
 
     /** Devine la qualité à partir d'un libellé quelconque ("HD 1080", "FULLHD", "4K"…). */

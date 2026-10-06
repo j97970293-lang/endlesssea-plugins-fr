@@ -1,8 +1,8 @@
 {
   "id": "fr.endlesssea.ext.purstream",
   "name": "Purstream",
-  "version": 12,
-  "versionName": "1.6.0",
+  "version": 13,
+  "versionName": "1.7.0",
   "apiVersion": 1,
   "description": {
     "fr": "Purstream — films et séries VF/VOSTFR en HLS direct (API purstream.ad) + lecteurs TMDB"
