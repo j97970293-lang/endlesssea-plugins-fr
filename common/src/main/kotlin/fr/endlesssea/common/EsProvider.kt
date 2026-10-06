@@ -117,9 +117,38 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
     // Réglages utilisateur (Endless Sea 0.4.0 : injectés dans ctx.settings)
     // -----------------------------------------------------------------------
 
+    /**
+     * Mémoire de secours des réglages, adossée à `ExtensionContext.cacheDir`
+     * (qui vit dans `filesDir`, donc survit à la fermeture de l'app).
+     *
+     * Pourquoi : l'app stocke les réglages d'extension dans des
+     * `SharedPreferences` dont la clé est `"<id>\u0000<clé>"`
+     * (`ExtensionSettingsStore`). Or **le caractère NUL est illégal en XML 1.0**,
+     * et les SharedPreferences sont persistées en XML : la valeur vit en mémoire
+     * pour la session en cours, mais le fichier ne se relit pas au démarrage
+     * suivant — l'utilisateur doit resaisir son adresse à chaque lancement.
+     * Tant que l'app n'est pas corrigée, on rejoue la dernière valeur connue.
+     */
+    private val settingsMemory: Cache by lazy { Cache(ctx, ttlMillis = 3650L * 24 * 3600 * 1000) }
+
+    private fun rememberSetting(key: String, value: String) {
+        if (key.startsWith("app.")) return // réglages globaux : propriété de l'app
+        runCatching { settingsMemory.put("setting/$extensionId/$key", value) }
+    }
+
+    private fun recalledSetting(key: String): String? =
+        if (key.startsWith("app.")) null
+        else runCatching { settingsMemory.get("setting/$extensionId/$key") }.getOrNull()
+
     /** Valeur brute d'un réglage déclaré par [settings]. */
-    protected fun setting(key: String, fallback: String = ""): String =
-        ctx.settings[key]?.trim()?.takeIf { it.isNotEmpty() } ?: fallback
+    protected fun setting(key: String, fallback: String = ""): String {
+        val live = ctx.settings[key]?.trim()?.takeIf { it.isNotEmpty() }
+        if (live != null) {
+            rememberSetting(key, live)
+            return live
+        }
+        return recalledSetting(key)?.takeIf { it.isNotEmpty() } ?: fallback
+    }
 
     /** Réglage booléen (`true`/`1`/`oui`/`on`). */
     protected fun settingFlag(key: String, fallback: Boolean = false): Boolean =
@@ -140,7 +169,8 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
     protected val userUrl: String?
         get() {
             val key = siteUrlKey ?: return null
-            return normalizeSiteUrl(ctx.settings[key])
+            // passe par setting() : valeur vive, sinon dernière valeur mémorisée
+            return normalizeSiteUrl(setting(key).takeIf { it.isNotEmpty() })
         }
 
     /** Réglages propres à la source, ajoutés après l'entrée « domaine ». */
@@ -189,7 +219,10 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
                 title = siteUrlTitle,
                 summary = siteUrlSummary,
                 type = ExtensionSetting.Type.TEXT,
-                defaultValue = defaultUrl,
+                // La dernière adresse saisie, pour que la boîte de dialogue
+                // affiche la valeur réellement utilisée même quand l'app a perdu
+                // ses SharedPreferences (voir [settingsMemory]).
+                defaultValue = userUrl ?: defaultUrl,
             )
         ) + extras
     }

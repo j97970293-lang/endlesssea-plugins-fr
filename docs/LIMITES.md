@@ -159,3 +159,29 @@ sans intervention, et l'index est désormais conforme au schéma de l'app. **Ré
 une source cassée est typiquement une affaire de quelques lignes dans un seul
 fichier** — c'était l'objectif du portage natif plutôt que d'une couche de
 compatibilité.
+
+
+## Réglages perdus à la fermeture de l'app (contourné en v1.9.0)
+
+**Symptôme** : il faut resaisir l'adresse du site à chaque lancement.
+
+**Cause (côté app)** : `ExtensionSettingsStore` stocke les réglages dans des
+`SharedPreferences` avec la clé `"<id>\u0000<clé>"`. Le caractère NUL est
+**illégal en XML 1.0**, or les SharedPreferences sont persistées en XML : la
+valeur vit en mémoire pour la session, mais le fichier ne se relit plus au
+démarrage suivant. Reproduit hors Android : un parseur XML refuse l'attribut
+avec `An invalid XML character (Unicode: 0x0) was found in the value of
+attribute "name"`.
+
+**Contournement (v1.9.0)** : `EsProvider.setting()` mémorise chaque valeur
+saisie dans `ExtensionContext.cacheDir` (qui vit sous `filesDir`, donc survit à
+la fermeture) et la rejoue quand l'app revient avec des réglages vides. Les
+réglages globaux `app.*` sont exclus : ils appartiennent à l'app.
+
+**Effet de bord assumé** : vider le champ ne suffit plus à revenir au domaine
+par défaut, puisqu'un réglage vide est indistinguable d'un réglage perdu. Pour
+revenir au domaine d'origine, saisir explicitement l'adresse par défaut
+(rappelée dans le résumé du réglage).
+
+Corrigé côté app, ce contournement deviendra inerte : une valeur vive a
+toujours la priorité sur la valeur mémorisée.

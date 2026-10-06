@@ -33,7 +33,7 @@ class AnimeSiteExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://animesite.fr"
     override val providerName = "AnimeSite"
     override val extensionId = "fr.endlesssea.ext.animesite"
-    override val versionCode = 13
+    override val versionCode = 14
     override val descriptionText = "Animes VF/VOSTFR, lecteurs SibNet en MP4 direct."
     override val supportedTypes = setOf(MediaType.ANIME, MediaType.MOVIE)
 
