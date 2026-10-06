@@ -7,6 +7,10 @@
 > `SearchItem.audioLangs`/`genres`, `ExtensionContext.cacheDir`.
 > Les extensions les exploitent depuis la **v1.4.0** ; le document reste ici comme
 > trace de la demande et des contournements historiques.
+>
+> **Demandes ouvertes (app 0.12.0) : §6 à §9 ci-dessous.** Deux anomalies
+> bloquantes (images, réglages) et deux demandes d'évolution (R8, chargement
+> progressif des serveurs).
 
 Ce document liste ce que les extensions **ne peuvent pas faire** aujourd'hui, pourquoi,
 et le changement minimal côté application qui le débloquerait. Il sert de base à une
@@ -150,14 +154,111 @@ extension est possible — c'est de notre ressort, pas d'une évolution de l'app
 
 ---
 
-## 6. Divers (plus petit, mais utile)
+## 6. Images — aucune ne s'affiche · **anomalie bloquante**
 
-| Manque | Conséquence | Demande |
-|---|---|---|
-| Pas de titre de rangée renvoyé par `getMainPage` | l'app ne peut pas nommer une rangée autrement qu'en dur | inclure le titre dans `HomeCategory` (cf. §1) |
-| `SearchItem` sans `genres` | pas de filtrage local des résultats | `var genres: List<String>` hors constructeur |
-| Aucun retour d'erreur typé visible | l'utilisateur voit « aucun serveur » sans cause | afficher le message de `SourceException` (déjà typé côté API) |
-| Pas de cache fourni par l'hôte | chaque écran refait les requêtes | `ExtensionContext.cacheDir` + aide mémoire simple |
+Suivi : [endlesssea#3](https://github.com/j97970293-lang/endlesssea/issues/3).
+
+`SafeAsyncImage` appelle `EsImages.imageLoader(context)` **dans le corps du
+composable**, donc à chaque recomposition. `imageLoader()` ne mémorise rien :
+il reconstruit un `ImageLoader` complet — `DiskCache` de 512 Mo **sur le même
+répertoire**, `MemoryCache`, `OkHttpClient`, puis `Coil.setImageLoader()`
+global. Coil verrouille son répertoire de cache : la deuxième instance échoue à
+ouvrir le journal et **toutes** les requêtes passent en `State.Error`.
+
+**Conséquence.** Affiches, icônes de sources et icône de dépôt restent sur le
+placeholder, et la création en boucle de clients HTTP dégrade les performances.
+
+**Demande.** Mémoïser l'`ImageLoader` (`@Volatile` + `synchronized`, ou
+`ImageLoaderFactory` sur l'`Application`) et le récupérer via `remember` côté
+composable.
+
+**Côté extensions.** Rien à contourner : v1.7.0 a déjà absolutisé toutes nos URL
+d'images (`Text.imageUrl`), nécessaire mais pas suffisant tant que le chargeur
+est recréé.
+
+---
+
+## 7. Réglages perdus à chaque redémarrage · **anomalie bloquante**
+
+Suivi : [endlesssea#4](https://github.com/j97970293-lang/endlesssea/issues/4).
+
+`ExtensionSettingsStore` écrit ses `SharedPreferences` avec la clé
+`"<id>\u0000<clé>"`. Le caractère NUL est **illégal en XML 1.0** et les
+`SharedPreferences` sont persistées en XML : la valeur vit en mémoire pour la
+session, puis le fichier ne se relit plus au démarrage suivant.
+
+**Conséquence.** L'utilisateur doit resaisir l'adresse de chaque source à chaque
+lancement de l'app.
+
+**Demande.** Séparateur légal (`|`, `::`) ou un fichier de préférences par
+extension, avec une migration au premier lancement.
+
+**Contournement (v1.9.0).** `EsProvider.setting()` mémorise la dernière valeur
+saisie dans `ExtensionContext.cacheDir` et la rejoue quand `ctx.settings` revient
+vide. À retirer une fois l'app corrigée — la valeur vive est déjà prioritaire.
+
+---
+
+## 8. Contrat R8 pour les extensions allégées · **évolution**
+
+Depuis la v1.8.0, les `.esx` n'embarquent plus `kotlin-stdlib`,
+`kotlinx-coroutines` ni `jsoup` : `ExtensionLoader` instancie l'extension avec
+le `ClassLoader` de l'app comme parent, ces classes sont donc déjà là. Gain :
+**1,2 Mo → 97 Ko par extension** (20 Mo → 1,6 Mo pour les 17).
+
+Les APK publiés sont des builds **debug**, sans R8 — le contrat tient. Mais un
+build **release** minifié élaguerait ces classes et casserait toutes les
+extensions compilées.
+
+**Demande.** Figer le contrat dans `app/proguard-rules.pro` :
+
+```proguard
+-keep class org.jsoup.** { *; }
+-keep class kotlin.** { *; }
+-keep class kotlinx.coroutines.** { *; }
+```
+
+et le documenter dans `docs/en/04-extension-model.md`, à côté de la règle
+`compileOnly` déjà énoncée pour `extensions-api`.
+
+---
+
+## 9. Serveurs : afficher ceux qui sont prêts sans attendre les autres · **évolution**
+
+Suivi : [endlesssea#5](https://github.com/j97970293-lang/endlesssea/issues/5).
+
+**Constat.** `loadLinks(LinkRequest)` renvoie `List<VideoLink>` : une valeur de
+retour unique, donc l'app attend que **tous** les lecteurs soient résolus avant
+d'afficher quoi que ce soit. Or une fiche agrège facilement 10 à 20 lecteurs
+(agrégateurs Movix, MoviesAPI, Frembed, VidSrc…) : les rapides répondent en
+moins d'une seconde, les lents — ou ceux qui finissent en timeout de 20 s —
+retiennent toute la liste. La feuille « Serveurs & priorité » de la 0.9.0 reste
+donc sur son indicateur de chargement alors que la moitié des liens sont déjà
+utilisables.
+
+**Demande (compatible binairement).** Ajouter à `EsExtension` une méthode
+**avec implémentation par défaut**, qui émet les liens au fil de l'eau :
+
+```kotlin
+/** Flux de liens : chaque lecteur résolu est émis dès qu'il est prêt. */
+fun loadLinksFlow(data: LinkRequest): Flow<VideoLink> = flow {
+    loadLinks(data).forEach { emit(it) }   // repli : comportement actuel
+}
+```
+
+Côté app : collecter le flux et insérer chaque serveur dans la feuille à son
+arrivée (l'ordre de priorité utilisateur s'applique au tri de la liste déjà
+reçue), en gardant un indicateur « recherche en cours » tant que le flux n'est
+pas terminé. Les extensions qui n'implémentent pas la méthode gardent
+exactement le comportement actuel.
+
+**Variante sans `Flow`**, si l'on veut éviter kotlinx.coroutines dans le
+contrat : un callback `fun loadLinks(data: LinkRequest, onLink: (VideoLink) -> Unit)`
+avec la même implémentation par défaut.
+
+**Côté extensions.** Prêt à l'emploi : `EsProvider.resolveServers()` itère déjà
+serveur par serveur et pourrait émettre à chaque itération — une dizaine de
+lignes à changer dans le socle, les 17 sources en héritent.
 
 ---
 
@@ -170,3 +271,7 @@ extension est possible — c'est de notre ressort, pas d'une évolution de l'app
 | Notes | contournement dans le synopsis | **app** (champ `rating`) |
 | Badge/préférence VF-VOSTFR | contournement par réglage de source | **app** (préférence globale, `options` pour LIST, langue sur `SearchItem`) |
 | Vignettes d'épisodes | **oui, en place** | — |
+| Affichage des images | non — anomalie app | **app** (§6, [#3](https://github.com/j97970293-lang/endlesssea/issues/3)) |
+| Persistance des réglages | contournement v1.9.0 | **app** (§7, [#4](https://github.com/j97970293-lang/endlesssea/issues/4)) |
+| Extensions légères en build release | oui tant que l'app n'est pas minifiée | **app** (§8, règles R8) |
+| Serveurs affichés au fil de l'eau | non — un seul retour de `loadLinks` | **app + api** (§9, [#5](https://github.com/j97970293-lang/endlesssea/issues/5)) |
