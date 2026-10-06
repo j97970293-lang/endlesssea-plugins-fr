@@ -10,11 +10,17 @@ plugins {
 }
 
 dependencies {
+    // Tout ce que l'app hôte embarque déjà est compileOnly : le .esx ne doit
+    // contenir QUE notre code (voir gradle.properties).
     compileOnly(project(":api-stub"))
-    implementation(libs.org.jsoup)
-    implementation(libs.kotlinx.coroutines.core)
+    compileOnly(kotlin("stdlib"))
+    compileOnly(libs.org.jsoup)
+    compileOnly(libs.kotlinx.coroutines.core)
 
     testImplementation(project(":api-stub"))
+    testImplementation(kotlin("stdlib"))
+    testImplementation(libs.org.jsoup)
+    testImplementation(libs.kotlinx.coroutines.core)
     testImplementation(libs.test.junit)
 }
 

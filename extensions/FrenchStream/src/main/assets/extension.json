@@ -1,8 +1,8 @@
 {
   "id": "fr.endlesssea.ext.frenchstream",
   "name": "French Stream",
-  "version": 13,
-  "versionName": "1.7.0",
+  "version": 14,
+  "versionName": "1.8.0",
   "apiVersion": 1,
   "description": {
     "fr": "French Stream — films & séries VF/VOSTFR (Uqload, Vidzy, FileMoon, Dood, Voe…)"

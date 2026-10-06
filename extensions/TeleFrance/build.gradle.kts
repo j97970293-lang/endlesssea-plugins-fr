@@ -40,7 +40,10 @@ android {
 dependencies {
     // Fournie par l'app hôte à l'exécution : jamais embarquée dans le .esx.
     compileOnly(project(":api-stub"))
-    // Boîte à outils native (HTTP, JSON, extracteurs…) : embarquée.
+    // Boîte à outils native (HTTP, JSON, extracteurs…) : embarquée, c'est notre code.
     implementation(project(":common"))
-    implementation(libs.org.jsoup)
+    // Fournies par l'app hôte à l'exécution (ClassLoader parent) : jamais embarquées.
+    compileOnly(kotlin("stdlib"))
+    compileOnly(libs.org.jsoup)
+    compileOnly(libs.kotlinx.coroutines.core)
 }

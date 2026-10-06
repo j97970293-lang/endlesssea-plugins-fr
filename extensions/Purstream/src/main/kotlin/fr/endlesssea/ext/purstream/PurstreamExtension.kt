@@ -61,7 +61,7 @@ class PurstreamExtension(ctx: ExtensionContext) : EsProvider(ctx) {
 
     override val providerName = "Purstream"
     override val extensionId = "fr.endlesssea.ext.purstream"
-    override val versionCode = 13
+    override val versionCode = 14
     override val descriptionText = "Films et séries VF/VOSTFR en HLS direct (API officielle du site)."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 

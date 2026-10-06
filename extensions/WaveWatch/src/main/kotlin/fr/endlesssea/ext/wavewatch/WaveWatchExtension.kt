@@ -38,7 +38,7 @@ class WaveWatchExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://wavewatch.top"
     override val providerName = "WaveWatch"
     override val extensionId = "fr.endlesssea.ext.wavewatch"
-    override val versionCode = 23
+    override val versionCode = 24
     override val descriptionText = "Films, séries, animes et chaînes TV en direct."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES, MediaType.ANIME, MediaType.OTHER)
 

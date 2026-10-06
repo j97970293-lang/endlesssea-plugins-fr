@@ -39,6 +39,26 @@ jobs:
           chmod +x gradlew
           ./gradlew --no-daemon packageAll
 
+      - name: Taille des extensions (garde-fou performance)
+        run: |
+          echo "### Taille des .esx" >> "$GITHUB_STEP_SUMMARY"
+          echo "| extension | taille | dex |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---:|---:|" >> "$GITHUB_STEP_SUMMARY"
+          total=0
+          for f in build/esx/*.esx; do
+            size=$(stat -c%s "$f")
+            dex=$(unzip -p "$f" classes.dex | wc -c)
+            total=$((total + size))
+            printf '| %s | %s Ko | %s Ko |\n' "$(basename "$f")" "$((size/1024))" "$((dex/1024))" >> "$GITHUB_STEP_SUMMARY"
+          done
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Total : $((total/1024)) Ko**" >> "$GITHUB_STEP_SUMMARY"
+          # Un .esx ne doit contenir que notre code : l'app fournit stdlib/jsoup/coroutines.
+          big=$(find build/esx -name '*.esx' -size +900k | wc -l)
+          if [ "$big" -gt 0 ]; then
+            echo "::warning::$big extension(s) dépassent 900 Ko — une dépendance de l'hôte est probablement ré-embarquée."
+          fi
+
       - name: Régénérer l'index du dépôt
         run: python3 tools/build-index.py --esx-dir build/esx
 

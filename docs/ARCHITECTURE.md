@@ -125,3 +125,30 @@ kotlinc -nowarn -cp jsoup.jar -d /tmp/out \
 
 C'est le contrôle utilisé pendant le portage : il valide tout le code Kotlin
 sans nécessiter le SDK Android.
+
+
+## Poids des `.esx` — ce que l'extension embarque (et ce qu'elle n'embarque pas)
+
+`ExtensionLoader` charge chaque extension avec
+`PathClassLoader(apk, EsExtension::class.java.classLoader)` : **le ClassLoader
+de l'application est le parent**. Tout ce que l'app contient déjà est donc
+résolvable depuis l'extension, et l'embarquer une seconde fois est du poids mort
+chargé 17 fois en mémoire.
+
+| Dépendance | Portée | Pourquoi |
+|---|---|---|
+| `dev.endlesssea.extensions.api` (`:api-stub`) | `compileOnly` | fournie par l'app, contrat partagé obligatoire |
+| `kotlin-stdlib` | `compileOnly` (+ `kotlin.stdlib.default.dependency=false`) | l'app est écrite en Kotlin |
+| `kotlinx-coroutines-core` | `compileOnly` | `extensions-api`/`extensions-loader` en dépendent |
+| `org.jsoup` | `compileOnly` | embarqué par `extensions-loader` (providers déclaratifs) |
+| `:common` | `implementation` | **notre** code, il doit être dans le `.esx` |
+
+Avant la v1.8.0, chaque `.esx` pesait ~1,2 Mo pour **3,6 Mo de `classes.dex`** :
+stdlib + coroutines + jsoup dupliqués 17 fois. La CI publie désormais un tableau
+des tailles et avertit au-delà de 900 Ko par extension.
+
+⚠️ Contrat implicite : les APK publiés par l'app sont des builds **debug** (pas
+de R8). Si l'app passait en build release minifié, il lui faudrait conserver
+`org.jsoup.**`, `kotlin.**` et `kotlinx.coroutines.**` dans
+`app/proguard-rules.pro`, sans quoi les extensions compilées ne retrouveraient
+plus ces classes.

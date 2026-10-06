@@ -8,6 +8,11 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
 }
 
+dependencies {
+    compileOnly(kotlin("stdlib"))
+    compileOnly(libs.kotlinx.coroutines.core)
+}
+
 kotlin {
     compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11) }
 }

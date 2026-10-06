@@ -32,7 +32,7 @@ class CineStreamExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://cinestream.info"
     override val providerName = "CineStream"
     override val extensionId = "fr.endlesssea.ext.cinestream"
-    override val versionCode = 12
+    override val versionCode = 13
     override val descriptionText = "Films VF/VOSTFR, une quinzaine de lecteurs par titre."
     override val supportedTypes = setOf(MediaType.MOVIE)
 

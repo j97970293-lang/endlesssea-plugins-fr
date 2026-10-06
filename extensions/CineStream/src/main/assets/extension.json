@@ -1,8 +1,8 @@
 {
   "id": "fr.endlesssea.ext.cinestream",
   "name": "CineStream",
-  "version": 12,
-  "versionName": "1.7.0",
+  "version": 13,
+  "versionName": "1.8.0",
   "apiVersion": 1,
   "description": {
     "fr": "CineStream — films VF/VOSTFR, une quinzaine de lecteurs par titre (Vidara, Voe, Uqload, VidMoly, StreamWish…)"
