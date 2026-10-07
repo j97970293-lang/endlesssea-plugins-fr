@@ -1,8 +1,8 @@
 {
   "id": "fr.endlesssea.ext.vostfree",
   "name": "Vostfree",
-  "version": 14,
-  "versionName": "2.0.0",
+  "version": 15,
+  "versionName": "2.0.1",
   "apiVersion": 1,
   "description": {
     "fr": "Vostfree — animes VF & VOSTFR et films (Sibnet, Uqload, VidMoly, Myvi…)"

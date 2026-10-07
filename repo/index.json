@@ -7,8 +7,8 @@
     {
       "id": "fr.endlesssea.ext.afterdark",
       "name": "Afterdark",
-      "version": 27,
-      "versionName": "2.0.0",
+      "version": 28,
+      "versionName": "2.0.1",
       "apiVersion": 1,
       "author": {
         "name": "j97970293-lang",
@@ -30,18 +30,18 @@
         "WEBVIEW"
       ],
       "minAppVersion": 1,
-      "size": 104753,
+      "size": 105077,
       "iconUrl": "https://www.google.com/s2/favicons?domain=afd926.mom&sz=128",
-      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Afterdark-2.0.0.esx",
-      "sha256": "9e081b6544d0c31a7c6ca98494a76a4a9ad80f845eaa9d01a409be16fdaa6753",
+      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Afterdark-2.0.1.esx",
+      "sha256": "0cd22d3e37ff18e1d83347d7c7a8cffb33e52a8c0b333837290f6950b4cb2aed",
       "kind": "COMPILED",
       "nsfw": false
     },
     {
       "id": "fr.endlesssea.ext.animesama",
       "name": "Anime-Sama",
-      "version": 16,
-      "versionName": "2.0.0",
+      "version": 17,
+      "versionName": "2.0.1",
       "apiVersion": 1,
       "author": {
         "name": "j97970293-lang",
@@ -64,18 +64,18 @@
         "WEBVIEW"
       ],
       "minAppVersion": 1,
-      "size": 111505,
+      "size": 111793,
       "iconUrl": "https://www.google.com/s2/favicons?domain=anime-sama.to&sz=128",
-      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/AnimeSama-2.0.0.esx",
-      "sha256": "92ee67bae1408500b38d54f71f517ab9d67d754556c24a602a43d543475c9598",
+      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/AnimeSama-2.0.1.esx",
+      "sha256": "3a9d0d2ae17a5f6b5070cf2a3c6e6992767713f9daecbd08917bd3cf3d9ac113",
       "kind": "COMPILED",
       "nsfw": false
     },
     {
       "id": "fr.endlesssea.ext.animesite",
       "name": "AnimeSite",
-      "version": 15,
-      "versionName": "2.0.0",
+      "version": 16,
+      "versionName": "2.0.1",
       "apiVersion": 1,
       "author": {
         "name": "j97970293-lang",
@@ -97,18 +97,18 @@
         "WEBVIEW"
       ],
       "minAppVersion": 1,
-      "size": 103837,
+      "size": 104093,
       "iconUrl": "https://www.google.com/s2/favicons?domain=animesite.fr&sz=128",
-      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/AnimeSite-2.0.0.esx",
-      "sha256": "be0922a97491ae4720faede72570794d71b2ec37e1097f7bf7440c161184e5f6",
+      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/AnimeSite-2.0.1.esx",
+      "sha256": "b9612e891466e7d7e366fe383b53db08335a728e7909a1b8c23f5be10cb1f6c1",
       "kind": "COMPILED",
       "nsfw": false
     },
     {
       "id": "fr.endlesssea.ext.animoflix",
       "name": "AnimoFlix",
-      "version": 24,
-      "versionName": "2.0.0",
+      "version": 25,
+      "versionName": "2.0.1",
       "apiVersion": 1,
       "author": {
         "name": "j97970293-lang",
@@ -130,18 +130,18 @@
         "WEBVIEW"
       ],
       "minAppVersion": 1,
-      "size": 105933,
+      "size": 106221,
       "iconUrl": "https://www.google.com/s2/favicons?domain=animoflix.to&sz=128",
-      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/AnimoFlix-2.0.0.esx",
-      "sha256": "1af64b87ef08c67fb58f55217fbc4c8bb0adbc460153ece08398f13c3be16159",
+      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/AnimoFlix-2.0.1.esx",
+      "sha256": "d1cd874b4e15517e58c7ec4ed2f180c94d82d70ca45739948d163b5535d34dd8",
       "kind": "COMPILED",
       "nsfw": false
     },
     {
       "id": "fr.endlesssea.ext.cinestream",
       "name": "CineStream",
-      "version": 15,
-      "versionName": "2.0.0",
+      "version": 16,
+      "versionName": "2.0.1",
       "apiVersion": 1,
       "author": {
         "name": "j97970293-lang",
@@ -162,18 +162,18 @@
         "WEBVIEW"
       ],
       "minAppVersion": 1,
-      "size": 101617,
+      "size": 101857,
       "iconUrl": "https://www.google.com/s2/favicons?domain=cinestream.info&sz=128",
-      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/CineStream-2.0.0.esx",
-      "sha256": "b72ffbdad8c539e13ddd1cff9d776c2b9e1b2eb5b6f00fb13d555c2df24908c6",
+      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/CineStream-2.0.1.esx",
+      "sha256": "611b0b700e5b2d4892ce40eec65f852054cabd652b90ae34f845514c945b9d28",
       "kind": "COMPILED",
       "nsfw": false
     },
     {
       "id": "fr.endlesssea.ext.flemmix",
       "name": "Flemmix",
-      "version": 21,
-      "versionName": "2.0.0",
+      "version": 22,
+      "versionName": "2.0.1",
       "apiVersion": 1,
       "author": {
         "name": "j97970293-lang",
@@ -196,18 +196,18 @@
         "WEBVIEW"
       ],
       "minAppVersion": 1,
-      "size": 103333,
+      "size": 103641,
       "iconUrl": "https://www.google.com/s2/favicons?domain=flemmix.eu&sz=128",
-      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Flemmix-2.0.0.esx",
-      "sha256": "a52d326cff1eff8f8fd6d20b40742d2243977a6c75db58a409b5b2cbc6c89989",
+      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Flemmix-2.0.1.esx",
+      "sha256": "77e7e842e7aaf4b92782f7c9a6a757e5482b6ec67ec5afa18614613652247a95",
       "kind": "COMPILED",
       "nsfw": false
     },
     {
       "id": "fr.endlesssea.ext.franime",
       "name": "FRAnime",
-      "version": 23,
-      "versionName": "2.0.0",
+      "version": 24,
+      "versionName": "2.0.1",
       "apiVersion": 1,
       "author": {
         "name": "j97970293-lang",
@@ -229,18 +229,18 @@
         "WEBVIEW"
       ],
       "minAppVersion": 1,
-      "size": 105969,
+      "size": 106257,
       "iconUrl": "https://www.google.com/s2/favicons?domain=franime.fr&sz=128",
-      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Franime-2.0.0.esx",
-      "sha256": "99956c4dea34339d5da4a5e98d812967d55fb09311623d32d2157671bf20f18c",
+      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Franime-2.0.1.esx",
+      "sha256": "e3572895f9d657956d01430ed3b655d5794c3dfae634f183b18f45c740825a2e",
       "kind": "COMPILED",
       "nsfw": false
     },
     {
       "id": "fr.endlesssea.ext.frembed",
       "name": "Frembed",
-      "version": 20,
-      "versionName": "2.0.0",
+      "version": 21,
+      "versionName": "2.0.1",
       "apiVersion": 1,
       "author": {
         "name": "j97970293-lang",
@@ -262,18 +262,18 @@
         "WEBVIEW"
       ],
       "minAppVersion": 1,
-      "size": 102017,
+      "size": 102289,
       "iconUrl": "https://www.google.com/s2/favicons?domain=frembed.surf&sz=128",
-      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Frembed-2.0.0.esx",
-      "sha256": "1888c32908174dd0273d973a9510918deb8ba66cdb9dbf777692120bb939b486",
+      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Frembed-2.0.1.esx",
+      "sha256": "373a1347bc03c7b4cb5de50b6b3b283c6d8faf69c135b7a07bcdb868e653523a",
       "kind": "COMPILED",
       "nsfw": false
     },
     {
       "id": "fr.endlesssea.ext.frenchstream",
       "name": "French Stream",
-      "version": 16,
-      "versionName": "2.0.0",
+      "version": 17,
+      "versionName": "2.0.1",
       "apiVersion": 1,
       "author": {
         "name": "j97970293-lang",
@@ -295,18 +295,18 @@
         "WEBVIEW"
       ],
       "minAppVersion": 1,
-      "size": 105105,
+      "size": 105381,
       "iconUrl": "https://www.google.com/s2/favicons?domain=fs27.lol&sz=128",
-      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/FrenchStream-2.0.0.esx",
-      "sha256": "abcb89dd7125899c7fef659c3121701f26454e6f4e6ab6c440827d27f599bc7d",
+      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/FrenchStream-2.0.1.esx",
+      "sha256": "5a1bbee2f3ba841ce05735decd99884aa3cfdbd957a93cbd9bb2c9f4a6d7311b",
       "kind": "COMPILED",
       "nsfw": false
     },
     {
       "id": "fr.endlesssea.ext.movix",
       "name": "Movix",
-      "version": 19,
-      "versionName": "2.0.0",
+      "version": 20,
+      "versionName": "2.0.1",
       "apiVersion": 1,
       "author": {
         "name": "j97970293-lang",
@@ -328,18 +328,18 @@
         "WEBVIEW"
       ],
       "minAppVersion": 1,
-      "size": 100257,
+      "size": 100525,
       "iconUrl": "https://www.google.com/s2/favicons?domain=movix.men&sz=128",
-      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Movix-2.0.0.esx",
-      "sha256": "eb2c1241fcce53645e05be394b1bbb43805c23ae9c617ebcbfcd93b53fe14695",
+      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Movix-2.0.1.esx",
+      "sha256": "b19c545ac8beb6acb05826f8717cc5f97fd0751207209a35d4e2472f0e07c871",
       "kind": "COMPILED",
       "nsfw": false
     },
     {
       "id": "fr.endlesssea.ext.purstream",
       "name": "Purstream",
-      "version": 16,
-      "versionName": "2.0.0",
+      "version": 17,
+      "versionName": "2.0.1",
       "apiVersion": 1,
       "author": {
         "name": "j97970293-lang",
@@ -361,18 +361,18 @@
         "WEBVIEW"
       ],
       "minAppVersion": 1,
-      "size": 106569,
+      "size": 106813,
       "iconUrl": "https://www.google.com/s2/favicons?domain=purstream.tech&sz=128",
-      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Purstream-2.0.0.esx",
-      "sha256": "54cfadc9988f5302b830b68b5bf3dac6601eb0a167433b5fbbf03044b0890770",
+      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Purstream-2.0.1.esx",
+      "sha256": "ca2a9d183a4b9e458a2d85be7621da4f4a017156e7dfe97672c232c74d92336a",
       "kind": "COMPILED",
       "nsfw": false
     },
     {
       "id": "fr.endlesssea.ext.telefrance",
       "name": "Télé FR Direct",
-      "version": 13,
-      "versionName": "2.0.0",
+      "version": 14,
+      "versionName": "2.0.1",
       "apiVersion": 1,
       "author": {
         "name": "j97970293-lang",
@@ -393,18 +393,18 @@
         "WEBVIEW"
       ],
       "minAppVersion": 1,
-      "size": 107341,
+      "size": 107653,
       "iconUrl": "https://www.google.com/s2/favicons?domain=iptv-org.github.io&sz=128",
-      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/TeleFrance-2.0.0.esx",
-      "sha256": "5485f7008c74832ba22bd657a3fe00715c44e492316a5affe9034ee18cdd2079",
+      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/TeleFrance-2.0.1.esx",
+      "sha256": "cfdd3d366aba7bc0e5a4072594a1f9091719754def822892360fc0b1f599920f",
       "kind": "COMPILED",
       "nsfw": false
     },
     {
       "id": "fr.endlesssea.ext.unjour1film",
       "name": "1Jour1Film",
-      "version": 22,
-      "versionName": "2.0.0",
+      "version": 23,
+      "versionName": "2.0.1",
       "apiVersion": 1,
       "author": {
         "name": "j97970293-lang",
@@ -426,18 +426,18 @@
         "WEBVIEW"
       ],
       "minAppVersion": 1,
-      "size": 106453,
+      "size": 106733,
       "iconUrl": "https://www.google.com/s2/favicons?domain=1jour1film0926b.lol&sz=128",
-      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/UnJour1Film-2.0.0.esx",
-      "sha256": "0587973b31e885e4e658508705a060cb7be84fcc9ce2bf9637554f0780795e3f",
+      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/UnJour1Film-2.0.1.esx",
+      "sha256": "91630aae89ca10f5b165bfffb61102c4b21b7690f024cd5d5cb0c1bd0c137d8c",
       "kind": "COMPILED",
       "nsfw": false
     },
     {
       "id": "fr.endlesssea.ext.vostfree",
       "name": "Vostfree",
-      "version": 14,
-      "versionName": "2.0.0",
+      "version": 15,
+      "versionName": "2.0.1",
       "apiVersion": 1,
       "author": {
         "name": "j97970293-lang",
@@ -459,18 +459,18 @@
         "WEBVIEW"
       ],
       "minAppVersion": 1,
-      "size": 100829,
+      "size": 101069,
       "iconUrl": "https://www.google.com/s2/favicons?domain=vostfree.ws&sz=128",
-      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Vostfree-2.0.0.esx",
-      "sha256": "66f50f6e812214d3a7f9e2b077e1d8b56a0667fe617a0b9aeda21a71e57cd744",
+      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Vostfree-2.0.1.esx",
+      "sha256": "3dc87308bf44694c5c81546a008482eb9645a11a31d370d049fc1fc80e615f56",
       "kind": "COMPILED",
       "nsfw": false
     },
     {
       "id": "fr.endlesssea.ext.wavewatch",
       "name": "WaveWatch",
-      "version": 26,
-      "versionName": "2.0.0",
+      "version": 27,
+      "versionName": "2.0.1",
       "apiVersion": 1,
       "author": {
         "name": "j97970293-lang",
@@ -494,18 +494,18 @@
         "WEBVIEW"
       ],
       "minAppVersion": 1,
-      "size": 105861,
+      "size": 106189,
       "iconUrl": "https://www.google.com/s2/favicons?domain=wavewatch.top&sz=128",
-      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/WaveWatch-2.0.0.esx",
-      "sha256": "945467565aa9c4cfcb582b7a1590d1c500b912d5957855602003538e3c9cd707",
+      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/WaveWatch-2.0.1.esx",
+      "sha256": "6f87b41848557aa7fe46fb2cc7b77bc532126644ec5cc3e4891062c5c33a3279",
       "kind": "COMPILED",
       "nsfw": false
     },
     {
       "id": "fr.endlesssea.ext.xalaflix",
       "name": "Xalaflix",
-      "version": 25,
-      "versionName": "2.0.0",
+      "version": 26,
+      "versionName": "2.0.1",
       "apiVersion": 1,
       "author": {
         "name": "j97970293-lang",
@@ -527,18 +527,18 @@
         "WEBVIEW"
       ],
       "minAppVersion": 1,
-      "size": 106105,
+      "size": 106321,
       "iconUrl": "https://www.google.com/s2/favicons?domain=xalaflix.tax&sz=128",
-      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Xalaflix-2.0.0.esx",
-      "sha256": "eed3af535cd4c8bce0986b771ab57962f7dba26d2f2b985a3e92a9b007f784f4",
+      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Xalaflix-2.0.1.esx",
+      "sha256": "60de74448356be7289d6f85238cab4727799c14d6f7939ce46e35ba38131e55b",
       "kind": "COMPILED",
       "nsfw": false
     },
     {
       "id": "fr.endlesssea.ext.zenix",
       "name": "Zenix",
-      "version": 18,
-      "versionName": "2.0.0",
+      "version": 19,
+      "versionName": "2.0.1",
       "apiVersion": 1,
       "author": {
         "name": "j97970293-lang",
@@ -560,10 +560,10 @@
         "WEBVIEW"
       ],
       "minAppVersion": 1,
-      "size": 104889,
+      "size": 105221,
       "iconUrl": "https://www.google.com/s2/favicons?domain=zenix.best&sz=128",
-      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Zenix-2.0.0.esx",
-      "sha256": "78c565ae914e2d4be7029ec1da5d767099ee741ebd748ef753cf43d11a8c16f6",
+      "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Zenix-2.0.1.esx",
+      "sha256": "fc81d7684744693675c3d8a1941297a4075643c3c1d51b06211ff8e36720cb0c",
       "kind": "COMPILED",
       "nsfw": false
     }

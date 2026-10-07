@@ -156,6 +156,10 @@ object Tmdb {
     // Enrichissement (Endless Sea 0.5.0 : MediaDetails.trailerUrl / .characters)
     // -----------------------------------------------------------------------
 
+    /** Noms d'une liste d'objets TMDB (`networks`, `production_companies`…). */
+    private fun names(node: JsonNode): List<String> =
+        node.list.mapNotNull { it.str("name")?.trim() }
+
     /**
      * Ajoute la bande-annonce et la distribution à une fiche déjà construite.
      *
@@ -168,8 +172,20 @@ object Tmdb {
         val d = json(http, "/$kind/$tmdb", "append_to_response=videos,credits")
             ?: return details
 
+        // --- Studio / diffuseur : l'app en affiche une pastille sur la fiche
+        // (`DetailsScreen`, les 3 premiers). La donnée est déjà dans cette réponse
+        // TMDB : aucun appel réseau supplémentaire.
+        // Séries = diffuseurs (`networks`), films = sociétés de production.
+        //
+        // `studios` est un **val de constructeur** : il faut passer par `copy()`.
+        // Or `rating`, `ratingCount`, `characters` et `trailerUrl` sont des `var`
+        // **hors constructeur**, que `copy()` ne recopie pas — la copie doit donc
+        // se faire AVANT de les remplir, sous peine de les perdre silencieusement.
+        val studios = names(d["networks"]).ifEmpty { names(d["production_companies"]) }.take(5)
+        val base = if (studios.isEmpty()) details else details.copy(studios = studios)
+
         // --- Note : champs dédiés depuis l'app 0.7.0 (plus de bricolage dans le synopsis).
-        val withNote = details
+        val withNote = base
         d["vote_average"].double?.takeIf { it > 0.0 }?.let { withNote.rating = it }
         d["vote_count"].int?.takeIf { it > 0 }?.let { withNote.ratingCount = it }
 

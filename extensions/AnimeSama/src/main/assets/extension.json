@@ -1,8 +1,8 @@
 {
   "id": "fr.endlesssea.ext.animesama",
   "name": "Anime-Sama",
-  "version": 16,
-  "versionName": "2.0.0",
+  "version": 17,
+  "versionName": "2.0.1",
   "apiVersion": 1,
   "description": {
     "fr": "Anime-Sama — animes VF & VOSTFR (catalogue complet, saisons, films, miroirs multiples)"

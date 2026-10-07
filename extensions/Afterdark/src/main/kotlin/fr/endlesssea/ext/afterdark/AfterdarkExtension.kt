@@ -44,7 +44,7 @@ class AfterdarkExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://afd926.mom"
     override val providerName = "Afterdark"
     override val extensionId = "fr.endlesssea.ext.afterdark"
-    override val versionCode = 27
+    override val versionCode = 28
     override val descriptionText = "Films et séries en VOSTFR, multi-serveurs."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 

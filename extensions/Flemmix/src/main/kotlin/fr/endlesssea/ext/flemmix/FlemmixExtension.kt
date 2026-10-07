@@ -38,7 +38,7 @@ class FlemmixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://flemmix.eu"   // flemmix.cloud n'est plus qu'une page-relais (certificat de test)
     override val providerName = "Flemmix"
     override val extensionId = "fr.endlesssea.ext.flemmix"
-    override val versionCode = 21
+    override val versionCode = 22
     override val descriptionText = "Films et séries VF/VOSTFR en streaming."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES, MediaType.ANIME)
 

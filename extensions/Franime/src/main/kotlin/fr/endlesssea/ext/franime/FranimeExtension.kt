@@ -44,7 +44,7 @@ class FranimeExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://franime.fr"
     override val providerName = "FRAnime"
     override val extensionId = "fr.endlesssea.ext.franime"
-    override val versionCode = 23
+    override val versionCode = 24
     override val descriptionText = "Animes VF et VOSTFR, catalogue FRAnime et métadonnées Kitsu."
     override val supportedTypes = setOf(MediaType.ANIME, MediaType.MOVIE)
 

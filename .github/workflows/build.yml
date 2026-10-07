@@ -34,6 +34,16 @@ jobs:
       - name: Configurer Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      # Tests JVM du socle commun : résolution au fil de l'eau (parité
+      # loadLinks/loadLinksFlow, priorité, dédoublonnage) et enrichissement TMDB
+      # (studios + conservation des champs hors constructeur). Aucun appareil
+      # requis, aucun réseau. Bloquant : un .esx ne part pas en release si le
+      # socle régresse.
+      - name: Tests unitaires du socle (:common)
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon :common:test
+
       - name: Compiler toutes les extensions (.esx)
         run: |
           chmod +x gradlew
