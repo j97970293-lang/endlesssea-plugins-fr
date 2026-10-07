@@ -35,9 +35,12 @@
 3. `search(SearchRequest)` → `searchQuery(query, page)`.
 4. `load(url)` renvoie une `MediaDetails` contenant les `Season`/`Episode`.
    Chaque `Episode.data` est une **charge utile opaque** propre à l'extension.
-5. `loadLinks(LinkRequest)` reçoit cette charge utile et renvoie les
-   `VideoLink` jouables. La plupart des extensions délèguent à
-   `servers(payload)` + `resolveServers(entries)`.
+5. `linkStream(LinkRequest)` reçoit cette charge utile et émet les `VideoLink`
+   jouables **au fil de l'eau** : chaque lecteur est publié dès qu'il est résolu,
+   sans attendre le plus lent (app 0.25.0, `EsExtension.loadLinksFlow`).
+   La plupart des extensions délèguent à `servers(payload)` +
+   `resolveServersFlow(entries)` ; `loadLinks` (finale) collecte ce flux pour les
+   applications plus anciennes.
 
 ## Classe de base `EsProvider`
 
@@ -49,7 +52,10 @@ Ce qu'elle fournit :
 | `item(...)` | fabrique de `SearchItem` (corrige les URLs, décode le HTML) |
 | `movieDetails(...)` | fiche à épisode unique (films, directs) |
 | `episode(...)` | fabrique d'`Episode` |
-| `resolveServers(entries, preferred)` | résout les embeds via les extracteurs, trie par qualité, applique la langue |
+| `resolveServers(entries, preferred)` | résout les embeds via les extracteurs, trie par qualité, applique la langue — renvoie une **liste** |
+| `resolveServersFlow(entries, preferred)` | même travail, mais **émet chaque lecteur dès qu'il est résolu** |
+| `firstNonEmpty { … }, { … }` | enchaîne des secours : l'étape suivante n'est lancée que si la précédente n'a rien donné |
+| `linksBlocking { … }` | enveloppe en flux une résolution sans équivalent progressif (secours par identifiant IMDb…) |
 | `serverRefs(entries)` | expose la liste des serveurs à l'UI |
 | `extractors()` | extracteurs natifs (surchargeable pour en ajouter) |
 
@@ -57,18 +63,48 @@ Ce que chaque extension implémente :
 
 ```kotlin
 class MonSiteExtension(ctx: ExtensionContext) : EsProvider(ctx) {
-    override val mainUrl = "https://monsite.tld"
+    override val defaultUrl = "https://monsite.tld"   // pas mainUrl : voir ci-dessous
     override val providerName = "Mon Site"
     override val homeRows = listOf(HomeRow("films", "Films", "/films/"))
 
     override suspend fun home(row: HomeRow, page: Int): PagedResult<SearchItem> { … }
     override suspend fun searchQuery(query: String, page: Int): List<SearchItem> { … }
-    override suspend fun load(url: String): MediaDetails { … }
+    override suspend fun details(url: String): MediaDetails { … }
     override suspend fun servers(payload: String): List<ServerEntry> { … }
-    override suspend fun loadLinks(data: LinkRequest): List<VideoLink> =
-        resolveServers(servers(data.episode.data), data.preferredServer)
 }
 ```
+
+C'est tout : `linkStream` par défaut fait déjà
+`resolveServersFlow(servers(payload), preferredServer)`.
+
+### Trois pièges du gabarit
+
+| À ne pas faire | Pourquoi |
+|---|---|
+| `override val mainUrl = "https://…"` | `mainUrl` est **dérivée** : `userUrl ?: defaultUrl`. L'écraser avec une constante désactive le réglage `site_url`, seule échappatoire de l'utilisateur quand le site change de domaine. On surcharge `defaultUrl`. |
+| `override suspend fun load(url)` | `load` est **finale** : elle applique les corrections d'images et l'enrichissement communs. La méthode à implémenter est `details(url)`. |
+| `override suspend fun loadLinks(data)` | `loadLinks` est **finale** : elle collecte `linkStream` pour les apps < 0.25.0. Pour une résolution personnalisée, on surcharge `linkStream`. |
+
+### Résolution personnalisée
+
+Quand la source a ses propres secours (agrégateurs TMDB, repli par identifiant
+IMDb…), on surcharge `linkStream` et on enchaîne avec `firstNonEmpty` :
+
+```kotlin
+override fun linkStream(data: LinkRequest): Flow<VideoLink> = flow {
+    emitAll(
+        firstNonEmpty(
+            { resolveServersFlow(servers(data.episode.data), data.preferredServer) },
+            { linksBlocking { secours(data) } },   // votre repli : agrégateur TMDB, IMDb…
+        )
+    )
+}
+
+private suspend fun secours(data: LinkRequest): List<VideoLink> = …
+```
+
+`loadLinks` continue de fonctionner sans rien faire de plus : il collecte ce flux.
+C'est exactement le schéma des 15 sources du dépôt qui ont une logique propre.
 
 ## `ServerEntry`, le pivot de la lecture
 

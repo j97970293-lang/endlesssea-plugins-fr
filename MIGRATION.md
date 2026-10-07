@@ -22,7 +22,7 @@ convertis en extensions Endless Sea.
 | `getMainPage(page, request)` | `getMainPage(MainPageRequest)` → `PagedResult<SearchItem>` |
 | `search(query)` | `search(SearchRequest)` → `PagedResult<SearchItem>` |
 | `load(url)` → `LoadResponse` | `load(url)` → `MediaDetails` (+ `Season`/`Episode`) |
-| `loadLinks(data, …, callback)` | `loadLinks(LinkRequest)` → `List<VideoLink>` (valeur de retour, pas de callback) |
+| `loadLinks(data, …, callback)` | `linkStream(LinkRequest)` → `Flow<VideoLink>` (émission au fil de l'eau, app 0.25.0+) ; `loadLinks` en reste la variante « liste », finale, pour les apps plus anciennes |
 | `newMovieLoadResponse` / `newTvSeriesLoadResponse` / `newAnimeLoadResponse` | `MediaDetails(type = MOVIE / SERIES / ANIME)` + helper `movieDetails(...)` |
 | `DubStatus.Dubbed` / `Subbed` | `AudioLang.VF` / `AudioLang.VOSTFR` portée par `Season`, `ServerEntry` et `VideoLink` |
 | `ExtractorLink` | `VideoLink(url, streamType, quality, audioLang, headers, subtitles)` |
