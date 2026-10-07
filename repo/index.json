@@ -33,7 +33,7 @@
       "size": 104753,
       "iconUrl": "https://www.google.com/s2/favicons?domain=afd926.mom&sz=128",
       "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Afterdark-2.0.0.esx",
-      "sha256": "78e0d2fad7f99dbdefe4879840fff3ffc67dff1c2ba2a58d9476b043c84c9555",
+      "sha256": "9e081b6544d0c31a7c6ca98494a76a4a9ad80f845eaa9d01a409be16fdaa6753",
       "kind": "COMPILED",
       "nsfw": false
     },
@@ -64,10 +64,10 @@
         "WEBVIEW"
       ],
       "minAppVersion": 1,
-      "size": 111509,
+      "size": 111505,
       "iconUrl": "https://www.google.com/s2/favicons?domain=anime-sama.to&sz=128",
       "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/AnimeSama-2.0.0.esx",
-      "sha256": "c5ffa1c1425028f9f055ba45dd1be349398b1388f3dc852e4223f7d12d28d283",
+      "sha256": "92ee67bae1408500b38d54f71f517ab9d67d754556c24a602a43d543475c9598",
       "kind": "COMPILED",
       "nsfw": false
     },
@@ -100,7 +100,7 @@
       "size": 103837,
       "iconUrl": "https://www.google.com/s2/favicons?domain=animesite.fr&sz=128",
       "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/AnimeSite-2.0.0.esx",
-      "sha256": "260c6b875eb0e2224efa7e527061627b3a05da03543d5350fc0547eed928605c",
+      "sha256": "be0922a97491ae4720faede72570794d71b2ec37e1097f7bf7440c161184e5f6",
       "kind": "COMPILED",
       "nsfw": false
     },
@@ -130,10 +130,10 @@
         "WEBVIEW"
       ],
       "minAppVersion": 1,
-      "size": 105937,
+      "size": 105933,
       "iconUrl": "https://www.google.com/s2/favicons?domain=animoflix.to&sz=128",
       "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/AnimoFlix-2.0.0.esx",
-      "sha256": "4b7b3b46dc588a30dabd13f2f36f2bd90e6c11169c1023af796ecefbd1fa2abf",
+      "sha256": "1af64b87ef08c67fb58f55217fbc4c8bb0adbc460153ece08398f13c3be16159",
       "kind": "COMPILED",
       "nsfw": false
     },
@@ -165,7 +165,7 @@
       "size": 101617,
       "iconUrl": "https://www.google.com/s2/favicons?domain=cinestream.info&sz=128",
       "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/CineStream-2.0.0.esx",
-      "sha256": "a20a64182192dda40dbb656e4f6b624bb2c65aa1dc28fefa8266b4058ed19274",
+      "sha256": "b72ffbdad8c539e13ddd1cff9d776c2b9e1b2eb5b6f00fb13d555c2df24908c6",
       "kind": "COMPILED",
       "nsfw": false
     },
@@ -199,7 +199,7 @@
       "size": 103333,
       "iconUrl": "https://www.google.com/s2/favicons?domain=flemmix.eu&sz=128",
       "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Flemmix-2.0.0.esx",
-      "sha256": "75c8f9a86abe94aa36bd7ca1b76896d4a3893a66ae836e38053739f8df055d62",
+      "sha256": "a52d326cff1eff8f8fd6d20b40742d2243977a6c75db58a409b5b2cbc6c89989",
       "kind": "COMPILED",
       "nsfw": false
     },
@@ -229,10 +229,10 @@
         "WEBVIEW"
       ],
       "minAppVersion": 1,
-      "size": 105973,
+      "size": 105969,
       "iconUrl": "https://www.google.com/s2/favicons?domain=franime.fr&sz=128",
       "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Franime-2.0.0.esx",
-      "sha256": "501082714171e06fcb9b389146b6adde9a503329f4914da97229cde242b1eb5d",
+      "sha256": "99956c4dea34339d5da4a5e98d812967d55fb09311623d32d2157671bf20f18c",
       "kind": "COMPILED",
       "nsfw": false
     },
@@ -262,10 +262,10 @@
         "WEBVIEW"
       ],
       "minAppVersion": 1,
-      "size": 102021,
+      "size": 102017,
       "iconUrl": "https://www.google.com/s2/favicons?domain=frembed.surf&sz=128",
       "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Frembed-2.0.0.esx",
-      "sha256": "3aa12beb42e3732d251122a959dae2ce0b25fc08c04bcdaa0b3e4733064ac6a2",
+      "sha256": "1888c32908174dd0273d973a9510918deb8ba66cdb9dbf777692120bb939b486",
       "kind": "COMPILED",
       "nsfw": false
     },
@@ -295,10 +295,10 @@
         "WEBVIEW"
       ],
       "minAppVersion": 1,
-      "size": 105109,
+      "size": 105105,
       "iconUrl": "https://www.google.com/s2/favicons?domain=fs27.lol&sz=128",
       "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/FrenchStream-2.0.0.esx",
-      "sha256": "75e4f4cbff3b35e4cdfdefc0f5954bb6521a062bf16a8b9b7e5c1e136790c5eb",
+      "sha256": "abcb89dd7125899c7fef659c3121701f26454e6f4e6ab6c440827d27f599bc7d",
       "kind": "COMPILED",
       "nsfw": false
     },
@@ -328,10 +328,10 @@
         "WEBVIEW"
       ],
       "minAppVersion": 1,
-      "size": 100261,
+      "size": 100257,
       "iconUrl": "https://www.google.com/s2/favicons?domain=movix.men&sz=128",
       "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Movix-2.0.0.esx",
-      "sha256": "d68f8fb930863765df9de1ef2ee45a98f7ba43b0b8eb272116edad82304cbbec",
+      "sha256": "eb2c1241fcce53645e05be394b1bbb43805c23ae9c617ebcbfcd93b53fe14695",
       "kind": "COMPILED",
       "nsfw": false
     },
@@ -364,7 +364,7 @@
       "size": 106569,
       "iconUrl": "https://www.google.com/s2/favicons?domain=purstream.tech&sz=128",
       "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Purstream-2.0.0.esx",
-      "sha256": "5665b7e1ba8929bc95849211b27a1e4d5fa5e0cec8300c6b451717ba612d091a",
+      "sha256": "54cfadc9988f5302b830b68b5bf3dac6601eb0a167433b5fbbf03044b0890770",
       "kind": "COMPILED",
       "nsfw": false
     },
@@ -396,7 +396,7 @@
       "size": 107341,
       "iconUrl": "https://www.google.com/s2/favicons?domain=iptv-org.github.io&sz=128",
       "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/TeleFrance-2.0.0.esx",
-      "sha256": "271a74fd4ff790c6b985b5d787df6432c66fc35876be6bc24c852c1a88f55808",
+      "sha256": "5485f7008c74832ba22bd657a3fe00715c44e492316a5affe9034ee18cdd2079",
       "kind": "COMPILED",
       "nsfw": false
     },
@@ -429,7 +429,7 @@
       "size": 106453,
       "iconUrl": "https://www.google.com/s2/favicons?domain=1jour1film0926b.lol&sz=128",
       "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/UnJour1Film-2.0.0.esx",
-      "sha256": "48b2697bfb6c6e10b3c8bde9aeced57673178d96826e5386cdcbda76a495a894",
+      "sha256": "0587973b31e885e4e658508705a060cb7be84fcc9ce2bf9637554f0780795e3f",
       "kind": "COMPILED",
       "nsfw": false
     },
@@ -462,7 +462,7 @@
       "size": 100829,
       "iconUrl": "https://www.google.com/s2/favicons?domain=vostfree.ws&sz=128",
       "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Vostfree-2.0.0.esx",
-      "sha256": "83e6d215957cfb4a692898b9ceda213c69c9a9d9a3f1802be0a8f15fcf85b5b0",
+      "sha256": "66f50f6e812214d3a7f9e2b077e1d8b56a0667fe617a0b9aeda21a71e57cd744",
       "kind": "COMPILED",
       "nsfw": false
     },
@@ -497,7 +497,7 @@
       "size": 105861,
       "iconUrl": "https://www.google.com/s2/favicons?domain=wavewatch.top&sz=128",
       "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/WaveWatch-2.0.0.esx",
-      "sha256": "8291422bb0386e8be9710c32fb6cd8b013c8a972efcaeb2f697fd2f59a5a234a",
+      "sha256": "945467565aa9c4cfcb582b7a1590d1c500b912d5957855602003538e3c9cd707",
       "kind": "COMPILED",
       "nsfw": false
     },
@@ -530,7 +530,7 @@
       "size": 106105,
       "iconUrl": "https://www.google.com/s2/favicons?domain=xalaflix.tax&sz=128",
       "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Xalaflix-2.0.0.esx",
-      "sha256": "00bf7e076bb1b2fbf3719152f0dfc4c06b80cc9a512f1ffc336944812d591d46",
+      "sha256": "eed3af535cd4c8bce0986b771ab57962f7dba26d2f2b985a3e92a9b007f784f4",
       "kind": "COMPILED",
       "nsfw": false
     },
@@ -563,7 +563,7 @@
       "size": 104889,
       "iconUrl": "https://www.google.com/s2/favicons?domain=zenix.best&sz=128",
       "apkUrl": "https://github.com/j97970293-lang/endlesssea-plugins-fr/releases/latest/download/Zenix-2.0.0.esx",
-      "sha256": "29f2c7ed127e43fc3c5a6c23bf4315d8641fcd9ae8bdf21ac665025d17044939",
+      "sha256": "78c565ae914e2d4be7029ec1da5d767099ee741ebd748ef753cf43d11a8c16f6",
       "kind": "COMPILED",
       "nsfw": false
     }
