@@ -15,6 +15,9 @@ import fr.endlesssea.common.ServerEntry
 import fr.endlesssea.common.Tmdb
 import fr.endlesssea.common.TmdbEmbeds
 import fr.endlesssea.common.VidSrcBuzz
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 
 /**
  * Movix (movix.men) — portage **natif** Endless Sea.
@@ -36,7 +39,7 @@ class MovixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     private val api get() = "https://api." + mainUrl.removePrefix("https://").removePrefix("http://").trimEnd('/')
     override val providerName = "Movix"
     override val extensionId = "fr.endlesssea.ext.movix"
-    override val versionCode = 18
+    override val versionCode = 19
     override val descriptionText = "Catalogue TMDB en français, lecteurs du réseau Movix et agrégateurs FR."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 
@@ -80,7 +83,7 @@ class MovixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
             ?: throw SourceException.VideoUnavailable("fiche TMDB introuvable")
     }
 
-    override suspend fun loadLinks(data: LinkRequest): List<VideoLink> {
+    override fun linkStream(data: LinkRequest): Flow<VideoLink> = flow {
         val payload = data.episode.data
         val parts = payload.substringAfter("movix:", payload).split(":").filter { it.isNotBlank() }
         val isTv = parts.getOrNull(0) == "tv"
@@ -105,28 +108,31 @@ class MovixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
         // 4) lecteurs publics indexés TMDB
         entries += TmdbEmbeds.publicEmbeds(tmdb, season, episode)
 
-        val out = LinkedHashMap<String, VideoLink>()
-        if (entries.isNotEmpty()) {
-            runCatching { resolveServers(entries, data.preferredServer) }
-                .getOrDefault(emptyList())
-                .forEach { out.putIfAbsent(it.url, it) }
+        // 5) Les 4 familles ci-dessus sont émises au fil de l'eau : la feuille
+        //    « Serveurs » se remplit dès le premier lecteur résolu, sans attendre
+        //    le timeout des hôtes injoignables (app 0.25.0).
+        val seen = HashSet<String>()
+        var any = false
+        resolveServersFlow(entries, data.preferredServer).collect {
+            if (seen.add(it.url)) { any = true; emit(it) }
         }
 
-        // 5) vidsrc.buzz : d'abord par TMDB, puis par id IMDb (certains contenus
+        // 6) vidsrc.buzz : d'abord par TMDB, puis par id IMDb (certains contenus
         //    n'y sont indexés que sous leur identifiant IMDb)
-        if (out.isEmpty()) {
+        if (!any) {
             runCatching { VidSrcBuzz.links(http, tmdb, season, episode) }
-                .getOrDefault(emptyList()).forEach { out.putIfAbsent(it.url, it) }
-            if (out.isEmpty()) {
-                Tmdb.imdbId(http, tmdb, isTv)?.let { imdb ->
-                    runCatching { VidSrcBuzz.links(http, imdb, season, episode) }
-                        .getOrDefault(emptyList()).forEach { out.putIfAbsent(it.url, it) }
-                }
+                .getOrDefault(emptyList())
+                .forEach { if (seen.add(it.url)) { any = true; emit(it) } }
+        }
+        if (!any) {
+            Tmdb.imdbId(http, tmdb, isTv)?.let { imdb ->
+                runCatching { VidSrcBuzz.links(http, imdb, season, episode) }
+                    .getOrDefault(emptyList())
+                    .forEach { if (seen.add(it.url)) { any = true; emit(it) } }
             }
         }
 
-        if (out.isEmpty()) throw SourceException.VideoUnavailable("aucun serveur exploitable")
-        return out.values.sortedByDescending { it.quality.pixels }
+        if (!any) throw SourceException.VideoUnavailable("aucun serveur exploitable")
     }
 
     override suspend fun servers(payload: String): List<ServerEntry> = emptyList()

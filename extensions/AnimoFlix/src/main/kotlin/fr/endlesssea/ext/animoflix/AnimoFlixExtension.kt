@@ -19,6 +19,9 @@ import fr.endlesssea.common.Text
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 
 /**
  * AnimoFlix (animoflix.to) — portage **natif** Endless Sea.
@@ -37,7 +40,7 @@ class AnimoFlixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://animoflix.to"
     override val providerName = "AnimoFlix"
     override val extensionId = "fr.endlesssea.ext.animoflix"
-    override val versionCode = 23
+    override val versionCode = 24
     override val descriptionText = "Animes VF et VOSTFR en streaming."
     override val supportedTypes = setOf(MediaType.ANIME, MediaType.MOVIE)
 
@@ -292,9 +295,9 @@ class AnimoFlixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
         return players.values.toList()
     }
 
-    override suspend fun loadLinks(data: LinkRequest): List<VideoLink> {
+    override fun linkStream(data: LinkRequest): Flow<VideoLink> = flow {
         val entries = servers(data.episode.data)
         if (entries.isEmpty()) throw SourceException.VideoUnavailable("aucun lecteur sur la page de l'épisode")
-        return resolveServers(entries, data.preferredServer)
+        emitAll(resolveServersFlow(entries, data.preferredServer))
     }
 }

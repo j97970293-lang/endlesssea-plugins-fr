@@ -19,6 +19,9 @@ import fr.endlesssea.common.ServerEntry
 import fr.endlesssea.common.Text
 import java.text.Normalizer
 import java.util.Base64
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 
 /**
  * FRAnime (franime.fr) — portage **natif** Endless Sea.
@@ -41,7 +44,7 @@ class FranimeExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://franime.fr"
     override val providerName = "FRAnime"
     override val extensionId = "fr.endlesssea.ext.franime"
-    override val versionCode = 22
+    override val versionCode = 23
     override val descriptionText = "Animes VF et VOSTFR, catalogue FRAnime et métadonnées Kitsu."
     override val supportedTypes = setOf(MediaType.ANIME, MediaType.MOVIE)
 
@@ -312,9 +315,9 @@ class FranimeExtension(ctx: ExtensionContext) : EsProvider(ctx) {
         return out.values.toList()
     }
 
-    override suspend fun loadLinks(data: LinkRequest): List<VideoLink> {
+    override fun linkStream(data: LinkRequest): Flow<VideoLink> = flow {
         val entries = servers(data.episode.data)
         if (entries.isEmpty()) throw SourceException.VideoUnavailable("aucun lecteur pour cet épisode")
-        return resolveServers(entries, data.preferredServer)
+        emitAll(resolveServersFlow(entries, data.preferredServer))
     }
 }

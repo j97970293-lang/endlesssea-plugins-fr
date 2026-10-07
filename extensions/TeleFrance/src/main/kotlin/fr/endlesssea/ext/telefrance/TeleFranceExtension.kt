@@ -15,6 +15,9 @@ import fr.endlesssea.common.EsProvider
 import fr.endlesssea.common.HomeRow
 import fr.endlesssea.common.M3u8
 import fr.endlesssea.common.ServerEntry
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 
 /**
  * Télé FR Direct — portage **natif** Endless Sea.
@@ -30,7 +33,7 @@ class TeleFranceExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://iptv-org.github.io"
     override val providerName = "Télé FR Direct"
     override val extensionId = "fr.endlesssea.ext.telefrance"
-    override val versionCode = 12
+    override val versionCode = 13
     override val descriptionText =
         "Chaînes françaises, francophones et malgaches en direct (playlists IPTV publiques)."
     override val supportedTypes = setOf(MediaType.OTHER)
@@ -291,9 +294,9 @@ class TeleFranceExtension(ctx: ExtensionContext) : EsProvider(ctx) {
         )
     }
 
-    override suspend fun loadLinks(data: dev.endlesssea.extensions.api.model.LinkRequest): List<VideoLink> {
+    override fun linkStream(data: dev.endlesssea.extensions.api.model.LinkRequest): Flow<VideoLink> = flow {
         val payload = data.episode.data
-        return when {
+        val links = when {
             payload.startsWith("yt:") -> {
                 val channelId = payload.removePrefix("yt:")
                 val videoId = ytVideoId(channelId)
@@ -308,7 +311,9 @@ class TeleFranceExtension(ctx: ExtensionContext) : EsProvider(ctx) {
                     listOf(VideoLink(stream, StreamType.HLS, server = "Direct"))
                 }
             }
-            else -> resolveServers(listOf(ServerEntry("Direct", payload, direct = true)))
+            else -> null
         }
+        if (links != null) links.forEach { emit(it) }
+        else emitAll(resolveServersFlow(listOf(ServerEntry("Direct", payload, direct = true))))
     }
 }

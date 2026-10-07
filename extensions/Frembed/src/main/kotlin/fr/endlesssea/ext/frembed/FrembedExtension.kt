@@ -16,6 +16,9 @@ import fr.endlesssea.common.Tmdb
 import fr.endlesssea.common.TmdbEmbeds
 import fr.endlesssea.common.VidSrcBuzz
 import fr.endlesssea.common.Text
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 
 /**
  * Frembed (frembed.surf / frembed.skin) — portage **natif** Endless Sea.
@@ -35,7 +38,7 @@ class FrembedExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://frembed.surf"
     override val providerName = "Frembed"
     override val extensionId = "fr.endlesssea.ext.frembed"
-    override val versionCode = 19
+    override val versionCode = 20
     override val descriptionText = "Réseau de lecteurs FR indexé par TMDB (Voe, Dood, Uqload…)."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 
@@ -121,7 +124,7 @@ class FrembedExtension(ctx: ExtensionContext) : EsProvider(ctx) {
             ?: throw SourceException.VideoUnavailable("fiche TMDB introuvable")
     }
 
-    override suspend fun loadLinks(data: LinkRequest): List<VideoLink> {
+    override fun linkStream(data: LinkRequest): Flow<VideoLink> = flow {
         val payload = data.episode.data
         val parts = payload.substringAfter("frembed:", payload).split(":").filter { it.isNotBlank() }
         val isTv = parts.getOrNull(0) == "tv"
@@ -134,24 +137,18 @@ class FrembedExtension(ctx: ExtensionContext) : EsProvider(ctx) {
             .getOrDefault(emptyList())
         entries += TmdbEmbeds.publicEmbeds(tmdb, season, episode)
 
-        val out = LinkedHashMap<String, VideoLink>()
-        runCatching { resolveServers(entries, data.preferredServer) }
-            .getOrDefault(emptyList())
-            .forEach { out.putIfAbsent(it.url, it) }
-
-        if (out.isEmpty()) {
-            runCatching { VidSrcBuzz.links(http, tmdb, season, episode) }
-                .getOrDefault(emptyList()).forEach { out.putIfAbsent(it.url, it) }
-            if (out.isEmpty()) {
-                Tmdb.imdbId(http, tmdb, isTv)?.let { imdb ->
-                    runCatching { VidSrcBuzz.links(http, imdb, season, episode) }
-                        .getOrDefault(emptyList()).forEach { out.putIfAbsent(it.url, it) }
-                }
-            }
-        }
-
-        if (out.isEmpty()) throw SourceException.VideoUnavailable("aucun serveur exploitable")
-        return out.values.sortedByDescending { it.quality.pixels }
+        emitAll(
+            firstNonEmpty(
+                { resolveServersFlow(entries, data.preferredServer) },
+                { linksBlocking { VidSrcBuzz.links(http, tmdb, season, episode) } },
+                {
+                    // Certains contenus ne sont indexés sur vidsrc.buzz que par identifiant IMDb
+                    val imdb = Tmdb.imdbId(http, tmdb, isTv)
+                        ?: throw SourceException.VideoUnavailable("pas d'identifiant IMDb")
+                    linksBlocking { VidSrcBuzz.links(http, imdb, season, episode) }
+                },
+            )
+        )
     }
 
     override suspend fun servers(payload: String): List<ServerEntry> = emptyList()

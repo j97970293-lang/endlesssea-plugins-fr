@@ -19,6 +19,9 @@ import fr.endlesssea.common.Text
 import fr.endlesssea.common.TmdbEmbeds
 import fr.endlesssea.common.VidSrcBuzz
 import fr.endlesssea.common.allExtractorsWithAggregators
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 
 /**
  * Zenix (zenix.best) — portage **natif** Endless Sea.
@@ -35,7 +38,7 @@ class ZenixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://zenix.best"
     override val providerName = "Zenix"
     override val extensionId = "fr.endlesssea.ext.zenix"
-    override val versionCode = 17
+    override val versionCode = 18
     override val descriptionText = "Films et séries VF/VOSTFR, serveurs du site + agrégateurs TMDB."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 
@@ -181,7 +184,7 @@ class ZenixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     // Lecture
     // -----------------------------------------------------------------------
 
-    override suspend fun loadLinks(data: LinkRequest): List<VideoLink> {
+    override fun linkStream(data: LinkRequest): Flow<VideoLink> = flow {
         val pageUrl = data.episode.data
         val raw = http.get(pageUrl).requireOk().text
         val epMatch = episodeRegex.find(pageUrl)
@@ -190,7 +193,11 @@ class ZenixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
         val isTv = "/tv-show/" in pageUrl || "/episode/" in pageUrl
         val tmdb = Regex("""[?&]tmdb=(\d+)""").find(raw)?.groupValues?.get(1)
 
-        val out = LinkedHashMap<String, VideoLink>()
+        val seen = HashSet<String>()
+        var any = false
+        suspend fun push(links: List<VideoLink>) {
+            links.forEach { if (seen.add(it.url)) { any = true; emit(it) } }
+        }
 
         // 1) 1Embed (HLS directs, les plus fiables)
         if (tmdb != null) {
@@ -199,9 +206,7 @@ class ZenixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
                 isTv -> "https://1embed.cc/embed/tv/$tmdb/1/1"
                 else -> "https://1embed.cc/embed/movie/$tmdb"
             }
-            runCatching { OneEmbed(http).getUrl(oneEmbedUrl, mainUrl) }
-                .getOrDefault(emptyList())
-                .forEach { out.putIfAbsent(it.url, it) }
+            push(runCatching { OneEmbed(http).getUrl(oneEmbedUrl, mainUrl) }.getOrDefault(emptyList()))
         }
 
         // 2) boutons « Serveurs de lecture » de la page
@@ -221,20 +226,14 @@ class ZenixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
             entries += TmdbEmbeds.publicEmbeds(tmdb, season, episode)
         }
 
-        if (entries.isNotEmpty()) {
-            runCatching { resolveServers(entries, data.preferredServer) }
-                .getOrDefault(emptyList())
-                .forEach { out.putIfAbsent(it.url, it) }
+        // Boutons de la page + agrégateurs, émis au fil de l'eau (app 0.25.0)
+        resolveServersFlow(entries, data.preferredServer).collect {
+            if (seen.add(it.url)) { any = true; emit(it) }
         }
 
-        if (tmdb != null && out.isEmpty()) {
-            runCatching { VidSrcBuzz.links(http, tmdb, season, episode) }
-                .getOrDefault(emptyList())
-                .forEach { out.putIfAbsent(it.url, it) }
-        }
+        if (tmdb != null && !any) push(runCatching { VidSrcBuzz.links(http, tmdb, season, episode) }.getOrDefault(emptyList()))
 
-        if (out.isEmpty()) throw SourceException.VideoUnavailable("aucun serveur exploitable")
-        return out.values.sortedByDescending { it.quality.pixels }
+        if (!any) throw SourceException.VideoUnavailable("aucun serveur exploitable")
     }
 
     override suspend fun servers(payload: String): List<ServerEntry> = emptyList()

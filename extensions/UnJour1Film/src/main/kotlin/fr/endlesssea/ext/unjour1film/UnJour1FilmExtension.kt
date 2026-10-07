@@ -17,6 +17,9 @@ import fr.endlesssea.common.ServerEntry
 import fr.endlesssea.common.Text
 import fr.endlesssea.common.TmdbEmbeds
 import java.util.Base64
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 
 /**
  * 1JOUR1FILM — portage **natif** Endless Sea.
@@ -39,7 +42,7 @@ class UnJour1FilmExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://1jour1film0926b.lol"
     override val providerName = "1Jour1Film"
     override val extensionId = "fr.endlesssea.ext.unjour1film"
-    override val versionCode = 21
+    override val versionCode = 22
     override val descriptionText = "Films et séries VF en streaming."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 
@@ -292,9 +295,9 @@ class UnJour1FilmExtension(ctx: ExtensionContext) : EsProvider(ctx) {
         return entries.distinctBy { it.url }
     }
 
-    override suspend fun loadLinks(data: LinkRequest): List<VideoLink> {
+    override fun linkStream(data: LinkRequest): Flow<VideoLink> = flow {
         val entries = servers(data.episode.data)
         if (entries.isEmpty()) throw SourceException.VideoUnavailable("aucune source renvoyée par le site")
-        return resolveServers(entries, data.preferredServer)
+        emitAll(resolveServersFlow(entries, data.preferredServer))
     }
 }

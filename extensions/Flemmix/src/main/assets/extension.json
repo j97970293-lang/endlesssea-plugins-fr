@@ -1,8 +1,8 @@
 {
   "id": "fr.endlesssea.ext.flemmix",
   "name": "Flemmix",
-  "version": 20,
-  "versionName": "1.9.0",
+  "version": 21,
+  "versionName": "2.0.0",
   "apiVersion": 1,
   "description": {
     "fr": "Flemmix — films et séries VF/VOSTFR en streaming (flemmix.cloud)"

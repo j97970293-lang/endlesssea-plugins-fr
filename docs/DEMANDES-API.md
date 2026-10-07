@@ -1,16 +1,23 @@
 # Demandes d'évolution — application Endless Sea
 
-> **État : résolu.** Tous les points de ce document ont été livrés par l'app
-> **0.7.0** (issue [endlesssea#1](https://github.com/j97970293-lang/endlesssea/issues/1),
+> **État : tout est résolu.** Les points 1 à 5 ont été livrés par l'app **0.7.0**
+> (issue [endlesssea#1](https://github.com/j97970293-lang/endlesssea/issues/1),
 > fermée) : `categories()` + `HomeCategory`, filtres type/langue transmis,
 > `rating`/`ratingCount`, `ExtensionSetting.options`, préférence VF/VOSTFR globale,
 > `SearchItem.audioLangs`/`genres`, `ExtensionContext.cacheDir`.
-> Les extensions les exploitent depuis la **v1.4.0** ; le document reste ici comme
-> trace de la demande et des contournements historiques.
+> Les extensions les exploitent depuis la **v1.4.0**.
 >
-> **Demandes ouvertes (app 0.12.0) : §6 à §9 ci-dessous.** Deux anomalies
-> bloquantes (images, réglages) et deux demandes d'évolution (R8, chargement
-> progressif des serveurs).
+> **§6 à §9 : livrés par l'app 0.25.0** (vérifié dans le code de l'app le 07/10/2026)
+> et exploités par ce dépôt depuis la **v2.0.0** :
+>
+> | § | Demande | Côté app (0.25.0) | Côté extensions (v2.0.0) |
+> |---|---|---|---|
+> | 6 | Images qui ne s'affichent pas ([#3](https://github.com/j97970293-lang/endlesssea/issues/3)) | `EsImages` mémoïse l'`ImageLoader` (`@Volatile` + `synchronized`) et le récupère via `remember` | rien à faire |
+> | 7 | Réglages perdus ([#4](https://github.com/j97970293-lang/endlesssea/issues/4)) | `ExtensionSettingsStore` : séparateur `\|` (légal en XML) + migration des anciennes clés | le contournement v1.9.0 reste en place, devenu inerte (la valeur vive est prioritaire) |
+> | 8 | Contrat R8 | `app/proguard-rules.pro` : `-keep class org.jsoup.**`, `kotlin.**`, `kotlinx.coroutines.**` | rien à faire — les `.esx` allégés survivent à un build release minifié |
+> | 9 | Serveurs au fil de l'eau ([#5](https://github.com/j97970293-lang/endlesssea/issues/5)) | `EsExtension.loadLinksFlow` (défaut = rejoue `loadLinks`) + appel tolérant `linksFlowCompat` | **`EsProvider` émet chaque lecteur dès qu'il est résolu** — les 17 sources en héritent |
+>
+> Le document reste ici comme trace des demandes et des contournements historiques.
 
 Ce document liste ce que les extensions **ne peuvent pas faire** aujourd'hui, pourquoi,
 et le changement minimal côté application qui le débloquerait. Il sert de base à une
@@ -264,14 +271,14 @@ lignes à changer dans le socle, les 17 sources en héritent.
 
 ## Résumé
 
-| Besoin | Faisable aujourd'hui ? | Qui doit bouger |
+| Besoin | État au 07/10/2026 | Qui a bougé |
 |---|---|---|
-| Catalogue par genre | contournement par la recherche | **app** (déclaration + appel des catégories) |
-| Filtres de recherche | non | **app** (UI qui remplit `FilterSet`) |
-| Notes | contournement dans le synopsis | **app** (champ `rating`) |
-| Badge/préférence VF-VOSTFR | contournement par réglage de source | **app** (préférence globale, `options` pour LIST, langue sur `SearchItem`) |
-| Vignettes d'épisodes | **oui, en place** | — |
-| Affichage des images | non — anomalie app | **app** (§6, [#3](https://github.com/j97970293-lang/endlesssea/issues/3)) |
-| Persistance des réglages | contournement v1.9.0 | **app** (§7, [#4](https://github.com/j97970293-lang/endlesssea/issues/4)) |
-| Extensions légères en build release | oui tant que l'app n'est pas minifiée | **app** (§8, règles R8) |
-| Serveurs affichés au fil de l'eau | non — un seul retour de `loadLinks` | **app + api** (§9, [#5](https://github.com/j97970293-lang/endlesssea/issues/5)) |
+| Catalogue par genre | **livré** (app 0.7.0, exploité v1.4.0) | app |
+| Filtres de recherche | **livré** (app 0.7.0, exploité v1.4.0) | app |
+| Notes | **livré** (`rating`/`ratingCount`, badge ⭐) | app |
+| Badge/préférence VF-VOSTFR | **livré** (`options` pour LIST, `audioLangs`, préférence globale) | app |
+| Vignettes d'épisodes | **livré** (complément TMDB depuis v1.3.0) | — |
+| Affichage des images | **livré** (app 0.25.0, §6 / [#3](https://github.com/j97970293-lang/endlesssea/issues/3)) | app |
+| Persistance des réglages | **livré** (app 0.25.0, §7 / [#4](https://github.com/j97970293-lang/endlesssea/issues/4)) | app |
+| Extensions légères en build release | **livré** (règles R8 de l'app, §8) | app |
+| Serveurs affichés au fil de l'eau | **livré** (app 0.25.0 `loadLinksFlow` + v2.0.0 côté sources, §9 / [#5](https://github.com/j97970293-lang/endlesssea/issues/5)) | app + api + extensions |

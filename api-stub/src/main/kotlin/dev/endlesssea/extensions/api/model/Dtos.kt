@@ -173,6 +173,6 @@ data class ExtensionInfo(
     val author: String = "",
     val description: String = "",
     val nsfw: Boolean = false,
-    /** Icône de la source (manifeste) — affichée dans l'accueil et la recherche. Additif (app 0.9.0). */
+    /** Icône de la source (manifeste) — affichée dans l'accueil et la recherche. Additif. */
     val iconUrl: String? = null,
 )

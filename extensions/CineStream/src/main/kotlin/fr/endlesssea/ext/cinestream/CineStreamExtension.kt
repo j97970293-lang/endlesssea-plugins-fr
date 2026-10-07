@@ -15,6 +15,9 @@ import fr.endlesssea.common.ServerEntry
 import fr.endlesssea.common.Text
 import fr.endlesssea.common.VidSrcBuzz
 import fr.endlesssea.common.urlEncode
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 
 /**
  * CineStream (cinestream.info) — portage **natif** Endless Sea.
@@ -32,7 +35,7 @@ class CineStreamExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://cinestream.info"
     override val providerName = "CineStream"
     override val extensionId = "fr.endlesssea.ext.cinestream"
-    override val versionCode = 14
+    override val versionCode = 15
     override val descriptionText = "Films VF/VOSTFR, une quinzaine de lecteurs par titre."
     override val supportedTypes = setOf(MediaType.MOVIE)
 
@@ -136,20 +139,18 @@ class CineStreamExtension(ctx: ExtensionContext) : EsProvider(ctx) {
         }
     }
 
-    override suspend fun loadLinks(data: LinkRequest): List<VideoLink> {
+    override fun linkStream(data: LinkRequest): Flow<VideoLink> = flow {
         val payload = data.episode.data
-        val entries = runCatching { servers(payload) }.getOrDefault(emptyList())
-        val links = if (entries.isEmpty()) emptyList()
-        else runCatching { resolveServers(entries, data.preferredServer) }.getOrDefault(emptyList())
-
-        // Secours : agrégateur TMDB
-        val tmdbId = payload.substringAfter('|', "")
-        val fallback = if (links.isEmpty() && tmdbId.isNotBlank()) {
-            runCatching { VidSrcBuzz.links(http, tmdbId) }.getOrDefault(emptyList())
-        } else emptyList()
-
-        val all = links + fallback
-        if (all.isEmpty()) throw SourceException.VideoUnavailable("aucun lecteur exploitable")
-        return all
+        emitAll(
+            firstNonEmpty(
+                { resolveServersFlow(runCatching { servers(payload) }.getOrDefault(emptyList()), data.preferredServer) },
+                {
+                    // Secours : agrégateur TMDB
+                    val tmdbId = payload.substringAfter('|', "")
+                    if (tmdbId.isBlank()) throw SourceException.VideoUnavailable("pas d'identifiant TMDB")
+                    linksBlocking { VidSrcBuzz.links(http, tmdbId) }
+                },
+            )
+        )
     }
 }

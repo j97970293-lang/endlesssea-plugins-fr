@@ -19,6 +19,9 @@ import fr.endlesssea.common.Text
 import fr.endlesssea.common.Tmdb
 import fr.endlesssea.common.TmdbEmbeds
 import fr.endlesssea.common.VidSrcBuzz
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 
 /**
  * Xalaflix — portage **natif** Endless Sea.
@@ -45,7 +48,7 @@ class XalaflixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val mainUrl get() = userUrl ?: resolved ?: defaultUrl
     override val providerName = "Xalaflix"
     override val extensionId = "fr.endlesssea.ext.xalaflix"
-    override val versionCode = 24
+    override val versionCode = 25
     override val descriptionText = "Films et séries VF/VOSTFR, serveurs du site et agrégateurs FR."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 
@@ -256,28 +259,26 @@ class XalaflixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
         return out.values.toList()
     }
 
-    override suspend fun loadLinks(data: LinkRequest): List<VideoLink> {
+    override fun linkStream(data: LinkRequest): Flow<VideoLink> = flow {
         val payload = data.episode.data
-        val entries = servers(payload)
-        val out = LinkedHashMap<String, VideoLink>()
-        if (entries.isNotEmpty()) {
-            runCatching { resolveServers(entries, data.preferredServer) }
-                .getOrDefault(emptyList()).forEach { out.putIfAbsent(it.url, it) }
-        }
-        if (out.isEmpty()) {
-            // dernier recours : vidsrc.buzz par TMDB, puis par IMDb
-            val parts = payload.substringBefore('|').substringAfter("://", "")
-                .substringAfter('/', "").trim('/').split("/")
-            val isTv = payload.split('|').getOrNull(1) == "tv" || parts.firstOrNull() == "episode"
-            val se = parts.getOrNull(2)?.split("-")
-            val title = payload.split('|').getOrNull(2)
-            val tmdb = title?.let { Tmdb.idFromTitle(http, it, isTv) }
-            if (tmdb != null) {
-                runCatching { VidSrcBuzz.links(http, tmdb, se?.getOrNull(0)?.toIntOrNull(), se?.getOrNull(1)?.toIntOrNull()) }
-                    .getOrDefault(emptyList()).forEach { out.putIfAbsent(it.url, it) }
-            }
-        }
-        if (out.isEmpty()) throw SourceException.VideoUnavailable("aucun serveur exploitable")
-        return out.values.sortedByDescending { it.quality.pixels }
+        emitAll(
+            firstNonEmpty(
+                { resolveServersFlow(servers(payload), data.preferredServer) },
+                { linksBlocking { lastResort(payload) } },
+            )
+        )
+    }
+
+    /** Dernier recours : vidsrc.buzz par identifiant TMDB déduit du titre (résolution bloquante). */
+    private suspend fun lastResort(payload: String): List<VideoLink> {
+        val parts = payload.substringBefore('|').substringAfter("://", "")
+            .substringAfter('/', "").trim('/').split("/")
+        val isTv = payload.split('|').getOrNull(1) == "tv" || parts.firstOrNull() == "episode"
+        val se = parts.getOrNull(2)?.split("-")
+        val title = payload.split('|').getOrNull(2)
+        val tmdb = title?.let { Tmdb.idFromTitle(http, it, isTv) } ?: return emptyList()
+        return runCatching {
+            VidSrcBuzz.links(http, tmdb, se?.getOrNull(0)?.toIntOrNull(), se?.getOrNull(1)?.toIntOrNull())
+        }.getOrDefault(emptyList())
     }
 }

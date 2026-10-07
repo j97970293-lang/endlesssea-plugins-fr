@@ -1,8 +1,8 @@
 {
   "id": "fr.endlesssea.ext.animoflix",
   "name": "AnimoFlix",
-  "version": 23,
-  "versionName": "1.9.0",
+  "version": 24,
+  "versionName": "2.0.0",
   "apiVersion": 1,
   "description": {
     "fr": "AnimoFlix — animes VF et VOSTFR en streaming (animoflix.to)"

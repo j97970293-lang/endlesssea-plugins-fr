@@ -1,7 +1,9 @@
 # Limites connues du projet
 
 Document d'honnêteté technique : ce que ce dépôt **ne** garantit **pas**, et pourquoi.
-État au 4 octobre 2026 — 17 extensions, v1.2.0, API Endless Sea `apiVersion 1` (app 0.5.0).
+État au 7 octobre 2026 — 17 extensions, v2.0.0, API Endless Sea `apiVersion 1`
+(compilées contre l'API de l'app **0.25.0**, binairement compatible avec les
+versions antérieures grâce aux méthodes à implémentation par défaut).
 
 ---
 
@@ -106,8 +108,10 @@ C'est la limite la plus importante à connaître avant d'ouvrir un ticket.
   extensions qui interrogent plusieurs agrégateurs en parallèle (WaveWatch,
   Afterdark, Movix) peuvent émettre une dizaine d'appels pour une seule fiche.
 - **Pas de parallélisme maîtrisé** : les appels d'agrégateurs sont enveloppés dans
-  des `runCatching` et fusionnés, mais sans timeout global ni annulation fine. Une
-  source lente peut rallonger l'affichage des serveurs.
+  des `runCatching` et fusionnés, mais sans timeout global ni annulation fine.
+  Depuis la v2.0.0 cela ne **retient plus l'affichage** — `EsProvider` émet chaque
+  lecteur dès qu'il est résolu (`loadLinksFlow`, app 0.25.0) — mais une source
+  lente continue de mobiliser un appel réseau jusqu'à son timeout.
 - **Gestion d'erreurs silencieuse** : le pattern `runCatching` masque les causes
   réelles. En cas de panne, l'utilisateur voit « aucun serveur » sans diagnostic, et
   il n'y a **aucune journalisation structurée** exploitable.
@@ -161,7 +165,12 @@ fichier** — c'était l'objectif du portage natif plutôt que d'une couche de
 compatibilité.
 
 
-## Réglages perdus à la fermeture de l'app (contourné en v1.9.0)
+## Réglages perdus à la fermeture de l'app (contourné en v1.9.0, **corrigé par l'app 0.25.0**)
+
+**État au 07/10/2026** : l'app a remplacé le séparateur illégal par `|` et migre les
+anciennes clés (`ExtensionSettingsStore.SEP` + `migrateLegacyKeys`). Le contournement
+décrit ci-dessous reste en place mais est **inerte** : la valeur vive de l'app est
+toujours prioritaire sur la valeur mémorisée. Il pourra être supprimé sans risque.
 
 **Symptôme** : il faut resaisir l'adresse du site à chaque lancement.
 

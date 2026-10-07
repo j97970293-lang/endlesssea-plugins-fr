@@ -19,6 +19,9 @@ import fr.endlesssea.common.ServerEntry
 import fr.endlesssea.common.Text
 import fr.endlesssea.common.VidSrcBuzz
 import fr.endlesssea.common.urlEncode
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 
 /**
  * French Stream (fs27.lol) — portage **natif** Endless Sea.
@@ -36,7 +39,7 @@ class FrenchStreamExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://fs27.lol"
     override val providerName = "French Stream"
     override val extensionId = "fr.endlesssea.ext.frenchstream"
-    override val versionCode = 15
+    override val versionCode = 16
     override val descriptionText = "Films & séries VF/VOSTFR, multi-lecteurs."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 
@@ -235,28 +238,27 @@ class FrenchStreamExtension(ctx: ExtensionContext) : EsProvider(ctx) {
         }
     }
 
-    override suspend fun loadLinks(data: LinkRequest): List<VideoLink> {
+    override fun linkStream(data: LinkRequest): Flow<VideoLink> = flow {
         val payload = data.episode.data
-        val entries = servers(payload)
-        val links = if (entries.isEmpty()) emptyList()
-        else runCatching { resolveServers(entries, data.preferredServer) }.getOrDefault(emptyList())
+        emitAll(
+            firstNonEmpty(
+                { resolveServersFlow(servers(payload), data.preferredServer) },
+                { linksBlocking { movieFallback(payload) } },
+            )
+        )
+    }
 
-        // Secours films : titre → identifiant IMDb → agrégateur vidsrc.buzz
-        if (links.isEmpty() && payload.startsWith("film|")) {
-            val newsId = payload.substringAfter('|')
-            val html = http.getOrNull("$mainUrl/index.php?newsid=$newsId", baseHeaders)?.text
-            val title = html?.let {
-                Regex("""<meta property="og:title" content="([^"]*)"""").find(it)?.groupValues?.get(1)?.trim()
-                    ?: Regex("""<h1[^>]*>([^<]+)""").find(it)?.groupValues?.get(1)?.trim()
-            }
-            val imdb = title?.let { imdbIdFor(it) }
-            if (imdb != null) {
-                val fallback = runCatching { VidSrcBuzz.links(http, imdb) }.getOrDefault(emptyList())
-                if (fallback.isNotEmpty()) return fallback
-            }
+    /** Secours films : titre → identifiant IMDb → agrégateur vidsrc.buzz. */
+    private suspend fun movieFallback(payload: String): List<VideoLink> {
+        if (!payload.startsWith("film|")) return emptyList()
+        val newsId = payload.substringAfter('|')
+        val html = http.getOrNull("$mainUrl/index.php?newsid=$newsId", baseHeaders)?.text
+        val title = html?.let {
+            Regex("""<meta property="og:title" content="([^"]*)"""").find(it)?.groupValues?.get(1)?.trim()
+                ?: Regex("""<h1[^>]*>([^<]+)""").find(it)?.groupValues?.get(1)?.trim()
         }
-        if (links.isEmpty()) throw SourceException.VideoUnavailable("aucun lecteur exploitable")
-        return links
+        val imdb = title?.let { imdbIdFor(it) } ?: return emptyList()
+        return runCatching { VidSrcBuzz.links(http, imdb) }.getOrDefault(emptyList())
     }
 
     /** Titre → identifiant IMDb via l'API de suggestion publique. */

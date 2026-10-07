@@ -22,6 +22,9 @@ import fr.endlesssea.common.ServerEntry
 import fr.endlesssea.common.Text
 import fr.endlesssea.common.urlEncode
 import java.net.URLDecoder
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 
 /**
  * Anime-Sama (anime-sama.to) — portage **natif** Endless Sea du provider CloudStream.
@@ -46,7 +49,7 @@ class AnimeSamaExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://anime-sama.to"
     override val providerName = "Anime-Sama"
     override val extensionId = "fr.endlesssea.ext.animesama"
-    override val versionCode = 15
+    override val versionCode = 16
     override val descriptionText =
         "Animes VF & VOSTFR : catalogue complet, saisons, films et OAV, miroirs multiples."
     override val supportedTypes = setOf(MediaType.ANIME, MediaType.MOVIE, MediaType.OVA)
@@ -348,11 +351,11 @@ class AnimeSamaExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     }
 
     /** Lecteur de secours : certains miroirs sont déjà des flux directs. */
-    override suspend fun loadLinks(data: dev.endlesssea.extensions.api.model.LinkRequest): List<VideoLink> {
+    override fun linkStream(data: dev.endlesssea.extensions.api.model.LinkRequest): Flow<VideoLink> = flow {
         val entries = servers(data.episode.data).map {
             if (Regex("""https?://\S+\.(?:m3u8|mp4|webm)(\?\S*)?$""").matches(it.url)) it.copy(direct = true) else it
         }
-        return resolveServers(entries, data.preferredServer)
+        emitAll(resolveServersFlow(entries, data.preferredServer))
     }
 }
 

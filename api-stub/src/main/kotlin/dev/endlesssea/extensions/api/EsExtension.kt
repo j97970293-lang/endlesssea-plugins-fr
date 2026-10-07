@@ -10,6 +10,8 @@ import dev.endlesssea.extensions.api.model.MediaDetails
 import dev.endlesssea.extensions.api.model.PagedResult
 import dev.endlesssea.extensions.api.model.SearchItem
 import dev.endlesssea.extensions.api.model.VideoLink
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 /**
  * The single contract every Endless Sea extension implements (docs/en/05-extension-api.md).
@@ -43,6 +45,22 @@ interface EsExtension {
 
     /** All playable variants for one episode/movie, grouped by server (spec §14). */
     suspend fun loadLinks(data: LinkRequest): List<VideoLink>
+
+    /**
+     * Même chose que [loadLinks], mais **au fil de l'eau** : chaque lecteur
+     * résolu est émis dès qu'il est prêt, sans attendre les plus lents.
+     *
+     * Pourquoi : une fiche agrège souvent 10 à 20 lecteurs ; il suffit d'un
+     * hôte injoignable pour que le timeout de 20 s retienne toute la liste,
+     * alors que la moitié des liens sont déjà jouables.
+     *
+     * Additif et **compatible binairement** : l'implémentation par défaut
+     * rejoue simplement [loadLinks], donc les extensions existantes gardent
+     * exactement leur comportement actuel.
+     */
+    fun loadLinksFlow(data: LinkRequest): Flow<VideoLink> = flow {
+        loadLinks(data).forEach { emit(it) }
+    }
 
     /** Shared host resolvers, tried on embed/iframe URLs before failing. */
     fun extractors(): List<ExtractorApi> = emptyList()

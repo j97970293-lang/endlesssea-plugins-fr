@@ -21,6 +21,9 @@ import fr.endlesssea.common.Text
 import fr.endlesssea.common.TmdbEmbeds
 import fr.endlesssea.common.VidSrcBuzz
 import fr.endlesssea.common.allExtractorsWithAggregators
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 
 /**
  * Afterdark (afd926.mom) — portage **natif** Endless Sea.
@@ -41,7 +44,7 @@ class AfterdarkExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://afd926.mom"
     override val providerName = "Afterdark"
     override val extensionId = "fr.endlesssea.ext.afterdark"
-    override val versionCode = 26
+    override val versionCode = 27
     override val descriptionText = "Films et séries en VOSTFR, multi-serveurs."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 
@@ -172,7 +175,7 @@ class AfterdarkExtension(ctx: ExtensionContext) : EsProvider(ctx) {
         }
     }
 
-    override suspend fun loadLinks(data: LinkRequest): List<VideoLink> {
+    override fun linkStream(data: LinkRequest): Flow<VideoLink> = flow {
         val payload = data.episode.data
         val parts = payload.split("|")
         val isTv = parts.firstOrNull() == "tv"
@@ -180,26 +183,23 @@ class AfterdarkExtension(ctx: ExtensionContext) : EsProvider(ctx) {
         val season = parts.getOrNull(2)?.toIntOrNull()
         val episode = parts.getOrNull(3)?.toIntOrNull()
 
-        val out = LinkedHashMap<String, VideoLink>()
+        val seen = HashSet<String>()
+        var any = false
+        suspend fun push(links: List<VideoLink>) {
+            links.forEach { if (seen.add(it.url)) { any = true; emit(it) } }
+        }
 
         // 1Embed d'abord : playlists HLS directes, les plus fiables
         val oneEmbedUrl = if (isTv) "https://1embed.cc/embed/tv/$tmdb/${season ?: 1}/${episode ?: 1}"
         else "https://1embed.cc/embed/movie/$tmdb"
-        runCatching { OneEmbed(http).getUrl(oneEmbedUrl, mainUrl) }
-            .getOrDefault(emptyList()).forEach { out.putIfAbsent(it.url, it) }
+        push(runCatching { OneEmbed(http).getUrl(oneEmbedUrl, mainUrl) }.getOrDefault(emptyList()))
 
-        val entries = servers(payload)
-        if (entries.isNotEmpty()) {
-            runCatching { resolveServers(entries, data.preferredServer) }
-                .getOrDefault(emptyList()).forEach { out.putIfAbsent(it.url, it) }
+        // Lecteurs de la fiche, émis au fil de l'eau (app 0.25.0)
+        resolveServersFlow(servers(payload), data.preferredServer).collect {
+            if (seen.add(it.url)) { any = true; emit(it) }
         }
 
-        if (out.isEmpty()) {
-            runCatching { VidSrcBuzz.links(http, tmdb, season, episode) }
-                .getOrDefault(emptyList()).forEach { out.putIfAbsent(it.url, it) }
-        }
-
-        if (out.isEmpty()) throw SourceException.VideoUnavailable("aucun serveur exploitable")
-        return out.values.sortedByDescending { it.quality.pixels }
+        if (!any) push(runCatching { VidSrcBuzz.links(http, tmdb, season, episode) }.getOrDefault(emptyList()))
+        if (!any) throw SourceException.VideoUnavailable("aucun serveur exploitable")
     }
 }

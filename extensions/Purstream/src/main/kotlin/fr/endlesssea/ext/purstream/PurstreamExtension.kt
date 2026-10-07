@@ -21,6 +21,9 @@ import fr.endlesssea.common.Text
 import fr.endlesssea.common.TmdbEmbeds
 import fr.endlesssea.common.VidSrcBuzz
 import fr.endlesssea.common.urlEncode
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 
 /**
  * Purstream (purstream.ad) — portage **natif** Endless Sea.
@@ -61,7 +64,7 @@ class PurstreamExtension(ctx: ExtensionContext) : EsProvider(ctx) {
 
     override val providerName = "Purstream"
     override val extensionId = "fr.endlesssea.ext.purstream"
-    override val versionCode = 15
+    override val versionCode = 16
     override val descriptionText = "Films et séries VF/VOSTFR en HLS direct (API officielle du site)."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 
@@ -217,7 +220,7 @@ class PurstreamExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     // Lecture
     // -----------------------------------------------------------------------
 
-    override suspend fun loadLinks(data: LinkRequest): List<VideoLink> {
+    override fun linkStream(data: LinkRequest): Flow<VideoLink> = flow {
         val parts = data.episode.data.split("|")
         val kind = parts.getOrNull(0) ?: "movie"
         val id = parts.getOrNull(1).orEmpty()
@@ -225,9 +228,14 @@ class PurstreamExtension(ctx: ExtensionContext) : EsProvider(ctx) {
         val season = parts.getOrNull(3)?.toIntOrNull()
         val episode = parts.getOrNull(4)?.toIntOrNull()
 
-        val out = LinkedHashMap<String, VideoLink>()
+        val seen = HashSet<String>()
+        var any = false
+        suspend fun push(link: VideoLink, server: String? = null) {
+            val l = server?.let { link.copy(server = it) } ?: link
+            if (seen.add(l.url)) { any = true; emit(l) }
+        }
 
-        // 1) sources officielles du site (HLS direct)
+        // 1) sources officielles du site (HLS direct), émises dès qu'elles sont lues
         val endpoint = if (kind == "tv" && season != null && episode != null) {
             "stream/$id/episode?season=$season&episode=$episode"
         } else {
@@ -239,23 +247,20 @@ class PurstreamExtension(ctx: ExtensionContext) : EsProvider(ctx) {
             val label = src.str("source_name") ?: "Source"
             M3u8.variants(http, u, "Purstream · $label", referer = "$mainUrl/")
                 .ifEmpty { listOf(VideoLink(u, StreamType.HLS, server = "Purstream · $label")) }
-                .forEach { out.putIfAbsent(it.url, it) }
+                .forEach { push(it) }
         }
 
-        // 2) lecteurs publics TMDB + agrégateur wiflix + vidsrc.buzz
+        // 2) lecteurs publics TMDB + agrégateur wiflix, au fil de l'eau (app 0.25.0)
         if (tmdb != null) {
             val entries = TmdbEmbeds.publicEmbeds(tmdb, season, episode) +
                 runCatching { TmdbEmbeds.wiflix(http, tmdb, season, episode) }.getOrDefault(emptyList())
-            runCatching { resolveServers(entries, data.preferredServer) }
-                .getOrDefault(emptyList())
-                .forEach { out.putIfAbsent(it.url, it.copy(server = "Purstream+ · ${it.server}")) }
+            resolveServersFlow(entries, data.preferredServer).collect { push(it, "Purstream+ · ${it.server}") }
             runCatching { VidSrcBuzz.links(http, tmdb, season, episode) }
                 .getOrDefault(emptyList())
-                .forEach { out.putIfAbsent(it.url, it) }
+                .forEach { push(it) }
         }
 
-        if (out.isEmpty()) throw SourceException.VideoUnavailable("aucune source disponible")
-        return out.values.sortedByDescending { it.quality.pixels }
+        if (!any) throw SourceException.VideoUnavailable("aucune source disponible")
     }
 
     override suspend fun servers(payload: String): List<ServerEntry> = emptyList()

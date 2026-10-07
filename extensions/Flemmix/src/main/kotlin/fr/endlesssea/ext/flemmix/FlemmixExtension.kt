@@ -15,6 +15,9 @@ import fr.endlesssea.common.EsProvider
 import fr.endlesssea.common.HomeRow
 import fr.endlesssea.common.ServerEntry
 import fr.endlesssea.common.Text
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 
 /**
  * Flemmix (flemmix.cloud) — portage **natif** Endless Sea.
@@ -35,7 +38,7 @@ class FlemmixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://flemmix.eu"   // flemmix.cloud n'est plus qu'une page-relais (certificat de test)
     override val providerName = "Flemmix"
     override val extensionId = "fr.endlesssea.ext.flemmix"
-    override val versionCode = 20
+    override val versionCode = 21
     override val descriptionText = "Films et séries VF/VOSTFR en streaming."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES, MediaType.ANIME)
 
@@ -216,9 +219,9 @@ class FlemmixExtension(ctx: ExtensionContext) : EsProvider(ctx) {
         }
     }
 
-    override suspend fun loadLinks(data: LinkRequest): List<VideoLink> {
+    override fun linkStream(data: LinkRequest): Flow<VideoLink> = flow {
         val entries = servers(data.episode.data)
         if (entries.isEmpty()) throw SourceException.VideoUnavailable("aucun lecteur pour cet épisode")
-        return resolveServers(entries, data.preferredServer)
+        emitAll(resolveServersFlow(entries, data.preferredServer))
     }
 }

@@ -19,6 +19,9 @@ import fr.endlesssea.common.ServerEntry
 import fr.endlesssea.common.Text
 import fr.endlesssea.common.TmdbEmbeds
 import fr.endlesssea.common.VidSrcBuzz
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 
 /**
  * WaveWatch (wavewatch.top) — portage **natif** Endless Sea.
@@ -38,7 +41,7 @@ class WaveWatchExtension(ctx: ExtensionContext) : EsProvider(ctx) {
     override val defaultUrl = "https://wavewatch.top"
     override val providerName = "WaveWatch"
     override val extensionId = "fr.endlesssea.ext.wavewatch"
-    override val versionCode = 25
+    override val versionCode = 26
     override val descriptionText = "Films, séries, animes et chaînes TV en direct."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES, MediaType.ANIME, MediaType.OTHER)
 
@@ -247,21 +250,20 @@ class WaveWatchExtension(ctx: ExtensionContext) : EsProvider(ctx) {
         return out.values.toList()
     }
 
-    override suspend fun loadLinks(data: LinkRequest): List<VideoLink> {
+    override fun linkStream(data: LinkRequest): Flow<VideoLink> = flow {
         val payload = data.episode.data
-        val entries = servers(payload)
-        val out = LinkedHashMap<String, VideoLink>()
-        if (entries.isNotEmpty()) {
-            runCatching { resolveServers(entries, data.preferredServer) }
-                .getOrDefault(emptyList()).forEach { out.putIfAbsent(it.url, it) }
-        }
-        if (out.isEmpty() && !payload.startsWith("live|")) {
-            val parts = payload.split("|")
-            runCatching {
-                VidSrcBuzz.links(http, parts[1], parts.getOrNull(2)?.toIntOrNull(), parts.getOrNull(3)?.toIntOrNull())
-            }.getOrDefault(emptyList()).forEach { out.putIfAbsent(it.url, it) }
-        }
-        if (out.isEmpty()) throw SourceException.VideoUnavailable("aucun serveur exploitable")
-        return out.values.sortedByDescending { it.quality.pixels }
+        emitAll(
+            firstNonEmpty(
+                { resolveServersFlow(servers(payload), data.preferredServer) },
+                {
+                    // Secours hors direct : vidsrc.buzz (identifiant TMDB de la charge utile)
+                    if (payload.startsWith("live|")) throw SourceException.VideoUnavailable("direct")
+                    val parts = payload.split("|")
+                    linksBlocking {
+                        VidSrcBuzz.links(http, parts[1], parts.getOrNull(2)?.toIntOrNull(), parts.getOrNull(3)?.toIntOrNull())
+                    }
+                },
+            )
+        )
     }
 }

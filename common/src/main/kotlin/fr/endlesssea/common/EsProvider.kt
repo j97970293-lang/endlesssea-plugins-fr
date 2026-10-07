@@ -23,6 +23,10 @@ import dev.endlesssea.extensions.api.model.StreamType
 import dev.endlesssea.extensions.api.model.SubtitleTrack
 import dev.endlesssea.extensions.api.model.VideoLink
 import dev.endlesssea.extensions.api.permission.ExtensionPermission
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.toList
 
 /** Une rangée de la page d'accueil (équivalent natif de `mainPageOf`). */
 data class HomeRow(val key: String, val title: String, val path: String = "")
@@ -405,6 +409,119 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
         entries.mapIndexed { i, e -> ServerRef(e.url.ifBlank { "srv$i" }, e.name) }
 
     // -----------------------------------------------------------------------
+    // Résolution au fil de l'eau (app 0.25.0 — `EsExtension.loadLinksFlow`)
+    // -----------------------------------------------------------------------
+
+    /**
+     * Même travail que [resolveServers], mais chaque lecteur résolu est **émis
+     * dès qu'il est prêt** au lieu d'attendre le plus lent.
+     *
+     * Pourquoi : une fiche agrège couramment 10 à 20 lecteurs (Movix, MoviesAPI,
+     * Frembed, VidSrc…). Avec un retour de liste unique, un hôte injoignable
+     * retient toute la feuille « Serveurs » pendant son timeout de 20 s alors
+     * que la moitié des liens sont déjà jouables.
+     *
+     * Ordre d'émission = ordre de priorité (lecteur choisi > langue préférée >
+     * ordre de la source) ; le tri par qualité reste appliqué par
+     * [resolveServers] pour le chemin « liste ».
+     */
+    protected fun resolveServersFlow(
+        entries: List<ServerEntry>,
+        preferred: ServerRef? = null,
+        subtitleCallback: (SubtitleTrack) -> Unit = {},
+    ): Flow<VideoLink> = flow {
+        if (entries.isEmpty()) throw SourceException.VideoUnavailable("aucun lecteur annoncé")
+        val pref = preferredLang()
+        val ordered = entries.sortedWith(
+            compareByDescending<ServerEntry> { e ->
+                preferred != null && (e.name.equals(preferred.name, true) || e.url == preferred.id)
+            }.thenByDescending { e ->
+                when {
+                    pref == null -> 0
+                    e.lang == pref -> 2
+                    e.lang == AudioLang.MULTI -> 1
+                    else -> 0
+                }
+            }
+        )
+        val seen = HashSet<String>()
+        var emitted = 0
+        for (entry in ordered) {
+            val subs = ArrayList<SubtitleTrack>()
+            val links = if (entry.direct) {
+                val type = Text.streamType(entry.url)
+                if (type == StreamType.HLS) {
+                    M3u8.variants(http, entry.url, entry.name, entry.referer ?: mainUrl)
+                } else {
+                    listOf(
+                        VideoLink(
+                            url = entry.url,
+                            streamType = type,
+                            quality = Text.quality(entry.url),
+                            server = Text.serverLabel(entry.name),
+                            headers = buildMap {
+                                put("User-Agent", http.userAgent)
+                                put("Referer", entry.referer ?: mainUrl)
+                            },
+                        )
+                    )
+                }
+            } else {
+                runCatching {
+                    Extractors.resolve(http, entry.url, entry.referer ?: mainUrl, entry.name) { subs.add(it) }
+                }.getOrDefault(emptyList())
+            }
+            // Les sous-titres trouvés sur CE lecteur accompagnent ses liens :
+            // en flux, on ne peut pas attendre la fin pour les rattacher.
+            subs.forEach(subtitleCallback)
+            for (l in links) {
+                val withLang = if (entry.lang != AudioLang.OTHER) l.copy(audioLang = entry.lang) else l
+                val final = if (subs.isEmpty()) withLang else withLang.copy(subtitles = withLang.subtitles + subs)
+                if (seen.add(final.url)) {
+                    emit(final)
+                    emitted++
+                }
+            }
+        }
+        if (emitted == 0) throw SourceException.VideoUnavailable("aucun flux exploitable")
+    }
+
+    /**
+     * Chaîne de résolution d'une source : la première qui produit des liens
+     * gagne, les suivantes ne servent que de secours. Chaque étape émet dès
+     * qu'elle a résolu un lecteur — la feuille « Serveurs » de l'app se remplit
+     * donc progressivement au lieu d'attendre le dernier recours.
+     *
+     * [steps] est paresseux : une étape n'est jamais lancée si une précédente a
+     * déjà émis quelque chose.
+     */
+    protected fun firstNonEmpty(vararg steps: suspend () -> Flow<VideoLink>): Flow<VideoLink> = flow {
+        var any = false
+        for (step in steps) {
+            if (any) break
+            // Comme l'ancien `runCatching { resolveServers(...) }.getOrDefault(emptyList())` :
+            // une étape qui échoue est ignorée, la suivante prend le relais.
+            runCatching {
+                step().collect {
+                    any = true
+                    emit(it)
+                }
+            }
+        }
+        if (!any) throw SourceException.VideoUnavailable("aucun serveur exploitable")
+    }
+
+    /**
+     * Secours bloquant enveloppé en flux, pour les résolutions qui n'ont pas
+     * d'équivalent progressif (agrégateurs à réponse unique, secours par
+     * identifiant IMDb…). Comportement strictement identique à l'ancien
+     * `runCatching { … }.getOrDefault(emptyList())`.
+     */
+    protected fun linksBlocking(block: suspend () -> List<VideoLink>): Flow<VideoLink> = flow {
+        runCatching { block() }.getOrDefault(emptyList()).forEach { emit(it) }
+    }
+
+    // -----------------------------------------------------------------------
     // Valeurs par défaut
     // -----------------------------------------------------------------------
 
@@ -564,8 +681,32 @@ abstract class EsProvider(protected val ctx: ExtensionContext) : EsExtension {
         return null
     }
 
-    override suspend fun loadLinks(data: LinkRequest): List<VideoLink> =
-        resolveServers(servers(data.episode.data), data.preferredServer)
+    // -----------------------------------------------------------------------
+    // Liens : flux (app 0.25.0) et liste (chemin historique)
+    // -----------------------------------------------------------------------
+
+    /**
+     * **Point d'entrée unique de la résolution des liens.**
+     *
+     * `EsProvider` en dérive les deux méthodes du contrat :
+     * - [loadLinksFlow] relaie le flux tel quel (l'app affiche chaque serveur dès
+     *   son arrivée — `EsExtension.loadLinksFlow`, app 0.25.0) ;
+     * - [loadLinks] collecte le flux et renvoie la liste, ce qui garantit que
+     *   l'ancien chemin et le nouveau donnent exactement les mêmes liens.
+     *
+     * Une source qui avait sa propre logique de résolution surcharge **cette**
+     * méthode (et non plus `loadLinks`, qui est finale) : elle hérite alors des
+     * deux chemins sans rien dupliquer.
+     */
+    protected open fun linkStream(data: LinkRequest): Flow<VideoLink> =
+        flow { emitAll(resolveServersFlow(servers(data.episode.data), data.preferredServer)) }
+
+    /** Flux des liens : chaque lecteur résolu est émis dès qu'il est prêt. */
+    override fun loadLinksFlow(data: LinkRequest): Flow<VideoLink> = linkStream(data)
+
+    /** Chemin historique (app < 0.25.0) : mêmes liens, en une seule fois. */
+    final override suspend fun loadLinks(data: LinkRequest): List<VideoLink> =
+        linkStream(data).toList()
 
     /** Lecteurs disponibles pour la charge utile d'un épisode. */
     protected open suspend fun servers(payload: String): List<ServerEntry> = emptyList()

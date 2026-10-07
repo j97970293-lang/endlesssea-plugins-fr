@@ -123,6 +123,29 @@ Ces extensions ne stockent ni n'hébergent aucun contenu : elles se contentent
 d'indexer des sites publics. Vous êtes responsable de l'usage que vous en
 faites et du respect du droit applicable dans votre pays.
 
+## Serveurs affichés au fil de l'eau (v2.0.0 — app 0.25.0+)
+
+L'application 0.25.0 appelle `EsExtension.loadLinksFlow` : une fiche n'attend plus
+que **tous** les lecteurs soient résolus pour afficher la feuille « Serveurs ».
+`EsProvider` émet donc chaque lecteur **dès qu'il est prêt**, dans l'ordre de
+priorité (lecteur choisi > langue préférée > ordre de la source).
+
+Concrètement : une fiche qui agrège 10 à 20 lecteurs (Movix, MoviesAPI, Frembed,
+VidSrc…) affiche ses premiers serveurs en moins d'une seconde au lieu d'attendre le
+timeout de 20 s d'un hôte injoignable. Les 17 sources en héritent — la résolution
+progressive est dans le socle commun, pas dupliquée dans chaque extension.
+
+| Élément | Rôle |
+|---|---|
+| `EsProvider.linkStream(LinkRequest): Flow<VideoLink>` | **point d'entrée unique** de la résolution ; une source à logique particulière surcharge cette méthode |
+| `EsProvider.loadLinksFlow` | relaie le flux à l'app (0.25.0+) |
+| `EsProvider.loadLinks` | finale : collecte le flux → mêmes liens pour les apps plus anciennes |
+| `resolveServersFlow(entries, preferred)` | équivalent progressif de `resolveServers` |
+| `firstNonEmpty { … }, { … }` | chaîne de secours : l'étape suivante n'est lancée que si la précédente n'a rien donné |
+
+Une app antérieure à 0.25.0 continue de fonctionner : elle appelle `loadLinks`, qui
+donne exactement les mêmes liens (vérifié par `ResolveServersFlowTest`).
+
 ## Catalogues par genre, notes, langues (v1.4.0 — app 0.7.0+)
 
 L'application sait désormais demander **toutes** les rangées déclarées par une
