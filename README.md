@@ -26,7 +26,25 @@ conversion.
 Les fichiers `.esx` peuvent aussi être téléchargés un par un depuis l'onglet
 **Releases** et installés manuellement.
 
-## Journal des sources (scan du 4 octobre 2026)
+## Journal des sources (scan du 10 octobre 2026)
+
+Chaque site a été re-sondé en direct (pages, API et annonces officielles de changement d'adresse) :
+
+| Source | Constat | Action |
+|---|---|---|
+| Afterdark | `afd926.mom` ne sert plus qu'une page « Nouvelle adresse officielle » pointant vers `atfr1026.mom` (site vérifié en ligne) | domaine par défaut → `atfr1026.mom` (v29) |
+| Flemmix | `flemmix.eu` ne sert plus qu'une page « Accès sécurisé » ; la page officielle `flemmix.name` annonce `flemmix.rip` (catalogue vérifié en ligne, bouclier `h_check=25` inchangé) | domaine par défaut → `flemmix.rip` (v23) |
+| 1Jour1Film | le domaine de septembre (`1jour1film0926b.lol`) est remplacé par `1jour1film0126b.site` ; `/dernieres-sorties/` et le protocole `admin-ajax.php` re-testés | domaine par défaut mis à jour (v24) |
+| Frembed | `frembed.surf` et `frembed.skin` ne servent plus qu'une page « changé d'adresse » vers `frembed.bar` | domaine par défaut + liste de repli → `frembed.bar` (v22) ; origine par défaut du réseau Frembed du socle commun corrigée aussi (Movix, Zenix, Xalaflix en bénéficient) |
+| French Stream | le 1er octobre, `fs27.lol` annonçait une redirection vers `fs01.lol` (catalogue identique vérifié) | domaine par défaut → `fs01.lol` (v18) |
+| CineStream | `cinestream.info` renvoie 404 depuis le 7 octobre ; **aucune nouvelle adresse publiée** par le site ou ses canaux | inchangé — dès la nouvelle adresse connue, la coller dans le réglage `site_url` de l'extension |
+| Purstream | annuaire `purstream.wiki/api/status` : domaine courant `purstream.tech`, statut OK | inchangé (résolution automatique déjà en place) |
+| Movix | `movix.men` actif (protection anti-robot côté site) ; `api.movix.men/api/tmdb/…` re-testé : répond | inchangé |
+| WaveWatch, Xalaflix, Zenix | `wavewatch.top` + proxy TMDB + `apis.wavewatch.top` (playerix) OK ; `xalaflix.tax` + annuaire `xalaflix.online` OK ; `zenix.best` + `/ajax/search/suggest` OK | inchangé |
+| Anime-Sama, AnimoFlix, Vostfree, Télé FR Direct | re-testés conformes | inchangé |
+| FRAnime, AnimeSite | Cloudflare 403 sur les IP du bac à sable (sites et API publiques confirmés actifs) | inchangé |
+
+### Scan du 4 octobre 2026
 
 Chaque source a été sondée en direct (requêtes réelles sur ses pages et API) :
 
