@@ -37,12 +37,23 @@ Chaque site a été re-sondé en direct (pages, API et annonces officielles de c
 | 1Jour1Film | le domaine de septembre (`1jour1film0926b.lol`) est remplacé par `1jour1film0126b.site` ; `/dernieres-sorties/` et le protocole `admin-ajax.php` re-testés | domaine par défaut mis à jour (v24) |
 | Frembed | `frembed.surf` et `frembed.skin` ne servent plus qu'une page « changé d'adresse » vers `frembed.bar` | domaine par défaut + liste de repli → `frembed.bar` (v22) ; origine par défaut du réseau Frembed du socle commun corrigée aussi (Movix, Zenix, Xalaflix en bénéficient) |
 | French Stream | le 1er octobre, `fs27.lol` annonçait une redirection vers `fs01.lol` (catalogue identique vérifié) | domaine par défaut → `fs01.lol` (v18) |
-| CineStream | `cinestream.info` renvoie 404 depuis le 7 octobre ; **aucune nouvelle adresse publiée** par le site ou ses canaux | inchangé — dès la nouvelle adresse connue, la coller dans le réglage `site_url` de l'extension |
+| CineStream | `cinestream.info` renvoie 404 depuis le 7 octobre (confirmé aussi hors bac à sable, et par les suiveurs d'adresses) ; **aucune nouvelle adresse publiée** par le site ou ses canaux | **mode dégradé (v17)** : sonde de panne à courte mémoire, accueil/recherche/fiches en repli sur le catalogue TMDB-FR, lecteurs de repli servis par le réseau public `api.movix.men` (la source « cinestream » y est indexée) puis vidsrc.buzz ; retour automatique au chemin nominal dès que le site répond (ou via le réglage `site_url`) |
 | Purstream | annuaire `purstream.wiki/api/status` : domaine courant `purstream.tech`, statut OK | inchangé (résolution automatique déjà en place) |
 | Movix | `movix.men` actif (protection anti-robot côté site) ; `api.movix.men/api/tmdb/…` re-testé : répond | inchangé |
 | WaveWatch, Xalaflix, Zenix | `wavewatch.top` + proxy TMDB + `apis.wavewatch.top` (playerix) OK ; `xalaflix.tax` + annuaire `xalaflix.online` OK ; `zenix.best` + `/ajax/search/suggest` OK | inchangé |
 | Anime-Sama, AnimoFlix, Vostfree, Télé FR Direct | re-testés conformes | inchangé |
 | FRAnime, AnimeSite | Cloudflare 403 sur les IP du bac à sable (sites et API publiques confirmés actifs) | inchangé |
+
+### Resynchronisation des manifestes (poussée dans la foulée du scan du 10)
+
+Les incrémentations de `versionCode` du scan du matin (Afterdark v29, Flemmix
+v23, Frembed v22, French Stream v18, 1Jour1Film v24) n'avaient **pas** été
+reportées dans les `extension.json` correspondants. Le garde-fou de
+`tools/build-index.py` (manifeste = source unique de vérité du `versionCode`
+compilé) faisait donc échouer la CI : aucun `.esx` ni `index.json` n'était
+publié, et l'app ne voyait jamais les corrections de domaines. Les cinq
+manifestes sont resynchronisés, et leurs `iconUrl`/descriptions pointent sur
+les domaines courants.
 
 ### Scan du 4 octobre 2026
 

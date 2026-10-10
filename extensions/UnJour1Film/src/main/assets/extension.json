@@ -1,7 +1,7 @@
 {
   "id": "fr.endlesssea.ext.unjour1film",
   "name": "1Jour1Film",
-  "version": 23,
+  "version": 24,
   "versionName": "2.0.1",
   "apiVersion": 1,
   "description": {
@@ -18,7 +18,7 @@
     "MOVIE",
     "SERIES"
   ],
-  "iconUrl": "https://www.google.com/s2/favicons?domain=1jour1film0926b.lol&sz=128",
+  "iconUrl": "https://www.google.com/s2/favicons?domain=1jour1film0126b.site&sz=128",
   "entryClass": "fr.endlesssea.ext.unjour1film.UnJour1FilmExtension",
   "permissions": [
     "INTERNET",
