@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 
 /**
- * Frembed (frembed.surf / frembed.skin) — portage **natif** Endless Sea.
+ * Frembed (frembed.bar — ex frembed.surf / frembed.skin) — portage **natif** Endless Sea.
  *
  *  - accueil : pages `/movies` et `/tv-show` du site (cartes
  *    `/{route}/{slug}/{tmdbId}` + `<img alt>`), pagination `?page=N` ;
@@ -33,12 +33,12 @@ import kotlinx.coroutines.flow.flow
  */
 class FrembedExtension(ctx: ExtensionContext) : EsProvider(ctx) {
 
-    private val fallbackDomains = listOf("https://frembed.surf", "https://frembed.skin")
+    private val fallbackDomains = listOf("https://frembed.bar", "https://frembed.surf", "https://frembed.skin")
 
-    override val defaultUrl = "https://frembed.surf"
+    override val defaultUrl = "https://frembed.bar"
     override val providerName = "Frembed"
     override val extensionId = "fr.endlesssea.ext.frembed"
-    override val versionCode = 21
+    override val versionCode = 22
     override val descriptionText = "Réseau de lecteurs FR indexé par TMDB (Voe, Dood, Uqload…)."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 
