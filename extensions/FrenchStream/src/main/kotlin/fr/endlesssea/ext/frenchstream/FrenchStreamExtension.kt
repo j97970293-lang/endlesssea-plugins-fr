@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 
 /**
- * French Stream (fs27.lol) — portage **natif** Endless Sea.
+ * French Stream (fs01.lol, ex fs27.lol) — portage **natif** Endless Sea.
  *
  * DataLife Engine :
  *  - listes `/films/`, `/series/` (+ `/page/N/`), recherche en POST sur `/index.php` ;
@@ -36,10 +36,10 @@ import kotlinx.coroutines.flow.flow
  */
 class FrenchStreamExtension(ctx: ExtensionContext) : EsProvider(ctx) {
 
-    override val defaultUrl = "https://fs27.lol"
+    override val defaultUrl = "https://fs01.lol"
     override val providerName = "French Stream"
     override val extensionId = "fr.endlesssea.ext.frenchstream"
-    override val versionCode = 17
+    override val versionCode = 18
     override val descriptionText = "Films & séries VF/VOSTFR, multi-lecteurs."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 
