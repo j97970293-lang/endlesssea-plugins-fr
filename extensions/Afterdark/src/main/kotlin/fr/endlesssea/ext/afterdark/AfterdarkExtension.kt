@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 
 /**
- * Afterdark (afd926.mom) — portage **natif** Endless Sea.
+ * Afterdark (atfr1026.mom, ex afd926.mom) — portage **natif** Endless Sea.
  *
  * Le site est un « front » sans catalogue propre : il consomme le proxy TMDB
  * de WaveWatch pour l'affichage et des agrégateurs FR pour la lecture.
@@ -41,10 +41,10 @@ import kotlinx.coroutines.flow.flow
  */
 class AfterdarkExtension(ctx: ExtensionContext) : EsProvider(ctx) {
 
-    override val defaultUrl = "https://afd926.mom"
+    override val defaultUrl = "https://atfr1026.mom"
     override val providerName = "Afterdark"
     override val extensionId = "fr.endlesssea.ext.afterdark"
-    override val versionCode = 28
+    override val versionCode = 29
     override val descriptionText = "Films et séries en VOSTFR, multi-serveurs."
     override val supportedTypes = setOf(MediaType.MOVIE, MediaType.SERIES)
 
