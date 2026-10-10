@@ -260,7 +260,7 @@ object Aggregators {
         isTv: Boolean,
         season: Int? = null,
         episode: Int? = null,
-        origin: String = "https://frembed.surf",
+        origin: String = "https://frembed.bar",
     ): List<ServerEntry> {
         val contentPage = if (isTv) "$origin/series?id=$tmdb" else "$origin/films?id=$tmdb"
         val apiUrl = when {
