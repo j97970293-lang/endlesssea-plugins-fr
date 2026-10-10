@@ -2,7 +2,7 @@
   "id": "fr.endlesssea.ext.movix",
   "name": "Movix",
   "version": 20,
-  "versionName": "2.0.1",
+  "versionName": "2.0.2",
   "apiVersion": 1,
   "description": {
     "fr": "Movix — catalogue TMDB en français, lecteurs du réseau movix.men + agrégateurs (Purstream, Wiflix, FrenchStream, Frembed, VidSrc)"

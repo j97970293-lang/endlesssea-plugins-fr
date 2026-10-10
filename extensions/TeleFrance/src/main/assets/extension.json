@@ -2,7 +2,7 @@
   "id": "fr.endlesssea.ext.telefrance",
   "name": "Télé FR Direct",
   "version": 14,
-  "versionName": "2.0.1",
+  "versionName": "2.0.2",
   "apiVersion": 1,
   "description": {
     "fr": "Chaînes de télévision françaises, francophones et malgaches en direct (playlists IPTV publiques)"

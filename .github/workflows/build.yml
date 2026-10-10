@@ -88,10 +88,18 @@ jobs:
             repo/index.json
           if-no-files-found: error
 
-      - name: Créer la release (sur tag)
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Lire la version du dépôt (fichier VERSION)
+        id: ver
+        run: echo "version=$(cat VERSION)" >> "$GITHUB_OUTPUT"
+
+      # Publication automatique : chaque push sur main met à jour la release
+      # v<VERSION> (le tag est créé au passage). Un tag v* poussé à la main
+      # reste possible : la release reprend alors la version du fichier VERSION.
+      - name: Publier la release v (main ou tag v*)
+        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: v${{ steps.ver.outputs.version }}
           files: |
             build/esx/*.esx
             repo/index.json

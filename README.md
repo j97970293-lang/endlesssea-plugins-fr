@@ -55,6 +55,19 @@ publié, et l'app ne voyait jamais les corrections de domaines. Les cinq
 manifestes sont resynchronisés, et leurs `iconUrl`/descriptions pointent sur
 les domaines courants.
 
+### Publication automatique v2.0.2 (dans la foulée du scan du 10)
+
+Tous les correctifs du 10 octobre étaient poussés sur `main`, mais la release
+restait bloquée en **v2.0.1** (7 octobre) : le workflow ne publiait que sur un
+tag `v*` poussé à la main, qui n'était jamais venu. L'app, qui télécharge
+`releases/latest/download/index.json`, continuait donc de servir les anciens
+`.esx` (domaines périmés, CineStream sans repli).
+
+La publication devient automatique : chaque push sur `main` publie la release
+`v<VERSION>` (nouveau fichier `VERSION`), tag créé au passage par le workflow.
+Le `versionName` des 17 manifestes passe à `2.0.2` pour que les `.esx` et
+l'index de cette release portent des noms de fichiers neufs.
+
 ### Scan du 4 octobre 2026
 
 Chaque source a été sondée en direct (requêtes réelles sur ses pages et API) :
@@ -122,7 +135,9 @@ python3 tools/build-index.py # → repo/index.json
 ```
 
 La CI GitHub Actions (`.github/workflows/build.yml`) fait les deux à chaque
-push sur `main`, et publie une release à chaque tag `v*`.
+push sur `main`, puis publie la release `v<VERSION>` (version lue dans le
+fichier [`VERSION`](VERSION) à la racine). Publier une mise à jour = incrémenter
+`VERSION` et pousser ; un tag `v*` poussé à la main fonctionne toujours.
 
 ## Ajouter une extension
 
